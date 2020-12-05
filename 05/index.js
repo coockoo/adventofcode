@@ -7,42 +7,39 @@ async function main() {
     return raw.split('');
   });
 
-  let res = 0;
+  let maxSeatId = 0;
 
-  let x = Array(128 * 8).fill().map((_, i) => i);
+  const allSeats = Array(128 * 8).fill().map((_, i) => i);
 
   for (let i = 0; i < arr.length; ++i) {
     const current = arr[i];
 
-    const localres = 0;
-    const column = 0;
+    let rows = Array(128).fill().map((_, i) => i);
+    let columns = Array(8).fill().map((_, i) => i);
 
-    let t = Array(128).fill().map((_, i) => i);
-    let z = Array(8).fill().map((_, i) => i);
     for (let j =0 ; j < current.length; ++j) {
       if (current[j] === 'B') {
-        t = t.slice(t.length / 2);
+        rows = rows.slice(rows.length / 2);
       } else if (current[j] === 'F') {
-        t = t.slice(0, t.length /2);
+        rows = rows.slice(0, rows.length /2);
       } else if (current[j] === 'R') {
-        z = z.slice(z.length /2)
+        columns = columns.slice(columns.length /2)
       } else if (current[j] === 'L') {
-        z = z.slice(0, z.length /2)
+        columns = columns.slice(0, columns.length /2)
       }
     }
 
-    if (t[0] * 8 + z[0] > res) {
-      res = t[0] * 8 + z[0]
-    }
-    if (x.indexOf(t[0] * 8 + z[0]) >= 0) {
-      x[x.indexOf(t[0] * 8 + z[0])] = 0;
+    const seatId = rows[0] * 8 + columns[0];
+
+    maxSeatId = Math.max(maxSeatId, seatId);
+
+    if (allSeats.indexOf(seatId) >= 0) {
+      allSeats[allSeats.indexOf(seatId)] = 0;
     }
   }
 
-
-
-  console.log(res);
-  console.log(x.filter(i => i && x[i] - x[i - 1] > 1)[0])
+  console.log('Max seat ID:', maxSeatId);
+  console.log('My seat ID:', allSeats.filter(i => i && allSeats[i] - allSeats[i - 1] > 1)[0])
 }
 
 main().catch(console.error);
