@@ -12,49 +12,36 @@ async function main() {
     }
     const match = raw.match(/^([a-z]+ [a-z]+) bags contain (\d+) ([a-z]+ [a-z]+) bags?(, (\d+) ([a-z]+ [a-z]+) bags?)?(, (\d+) ([a-z]+ [a-z]+) bags?)?(, (\d+) ([a-z]+ [a-z]+) bags?)?(, (\d+) ([a-z]+ [a-z]+) bags?)?(, (\d+) ([a-z]+ [a-z]+) bags?)?(, (\d+) ([a-z]+ [a-z]+) bags?)?/);
 
+    if (!bags[match[1]]) {
+      bags[match[1]] = {}
+    }
+
     for (let i = 3; i <= 100; i += 3) {
       if (!match[i]) {
         break;
       }
 
-      if (!bags[match[i]]) {
-        bags[match[i]] = []
-      }
-
-      bags[match[i]].push(match[1]);
+      bags[match[1]][match[i]] = +match[i - 1];
     }
   });
 
-  let visitedBags = [];
-
-  let currentBags = [...bags['shiny gold']]
-  let res = [...currentBags];
-
-
-  while (currentBags.length) {
-    const currentBag = currentBags.shift()
-
-    if (currentBag === 'shiny gold') {
-      continue;
+  function calc(key) {
+    const bag = bags[key];
+    if (!bag) {
+      return 0;
     }
 
-    if (visitedBags.indexOf(currentBag) >= 0) {
-      continue;
-    }
-    visitedBags.push(currentBag);
+    const keys = Object.keys(bag);
 
-    if (!bags[currentBag]) {
-      continue;
-    }
-
-    res = [...res, ...bags[currentBag]]
-    currentBags = [...currentBags, ...bags[currentBag]];
+    return keys.reduce((acc, bagKey) => {
+      const childCalcRes = calc(bagKey)
+      console.log(key, bagKey, bag[bagKey], childCalcRes);
+      acc += bag[bagKey] + bag[bagKey] * childCalcRes;
+      return acc;
+    }, 0);
   }
 
-  console.log([...new Set(res)].length);
-
-
-  return;
+  console.log(calc('shiny gold'))
 }
 
 main().catch(console.error);
