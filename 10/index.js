@@ -44,12 +44,7 @@ async function main() {
     }
   }
 
-  let counts = {
-    0: 1,
-  };
-  let p = [0];
-
-  // console.log(tree);
+  let counts = { 0: 1 };
   for (let i = 0; i < arr.length - 1; ++i) {
     const current = arr[i];
     if (!tree[current]) {
