@@ -14,7 +14,6 @@ async function main() {
       };
     });
 
-  let res = 0;
   //   N
   // W   E
   //   S
