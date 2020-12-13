@@ -48,16 +48,15 @@ async function main() {
     }
     str.push(`(n + ${i}) mod ${m} = 0`);
 
-    const a = (10 * m - i) % m;
+    const a = (m - i) % m;
     const b = M / m;
     let b1 = 0;
-    for (let j = 1; j <= b; ++j) {
+    for (let j = 0; j <= b; ++j) {
       if ((b * j) % m === 1) {
         b1 = j;
         break;
       }
     }
-    /*
     console.log('i', i);
     console.log('m', m);
     console.log('a', a);
@@ -65,17 +64,30 @@ async function main() {
     console.log('b % m', b % m);
     console.log("b'", b1);
     console.log();
-    */
     sum += a * b * b1;
   }
 
   const res = sum % M;
-  console.log('Answer 2:', res);
+  // const res = 836024966345345;
+  console.log('Answer 2 (not correct):', res);
+
+  let max = 0;
+  for (let i = 0; i < arr.length; ++i) {
+    const m = arr[i];
+    if (m === 'x') {
+      continue;
+    }
+    const curr = (res + i) % m;
+    max = Math.max(max, curr);
+  }
+
+  console.log('Answer 2:', res - max);
 
   console.log('Wolfram: ', str.join(', '));
-  // Incorrect: 836024966345452
-  // Incorrect: 836024966345394
-  //   correct: 836024966345345
+  //   correct: 836024966345345 +   0
+  // Incorrect: 836024966345381 +  36
+  // Incorrect: 836024966345394 +  49
+  // Incorrect: 836024966345452 + 107
 }
 
 main().catch(console.error);
