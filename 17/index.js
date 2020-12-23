@@ -4,6 +4,45 @@ const path = require('path');
 const MAX_CYCLES = 6;
 const DIFF = [-1, 0, 1];
 
+function getValue(cube, coordinates) {
+  const key = coordinates.join(',');
+  if (cube[key] === undefined) {
+    cube[key] = false;
+  }
+  return cube[key];
+}
+
+function setValue(cube, coordinates, value) {
+  const key = coordinates.join(',');
+  cube[key] = value;
+}
+
+function getNeighbours(cube, coordinates) {
+  const offsets = getOffsets(coordinates.length);
+  return offsets.map((offset) => {
+    const neighbourCoordinates = coordinates.map((c, i) => c + offset[i]);
+    const value = getValue(cube, neighbourCoordinates);
+    return value;
+  });
+}
+
+const offsetsCache = { 0: [[]] };
+function getOffsets(dimensions) {
+  if (!offsetsCache[dimensions]) {
+    const prevOffsets = getOffsets(dimensions - 1);
+    const offsets = [];
+    DIFF.forEach((diff) => {
+      prevOffsets.forEach((offset) => {
+        const newOffset = [...offset, diff];
+        offsets.push(newOffset);
+      });
+    });
+    offsetsCache[dimensions] = offsets;
+  }
+
+  return offsetsCache[dimensions];
+}
+
 async function main() {
   const content = fs.readFileSync(path.join(__dirname, './input.txt'), 'utf8');
   const arr = content
@@ -13,118 +52,38 @@ async function main() {
       return raw.split('');
     });
 
-  if (arr.length % 2 === 0) {
-    arr.forEach((line) => {
-      line.push('.');
+  const dimensions = 3;
+
+  const res1 = getForDimensions(arr, 3);
+  console.log('Part 1: %d', res1);
+  const res2 = getForDimensions(arr, 4);
+  console.log('Part 2: %d', res2);
+}
+
+function getForDimensions(arr, dimensions) {
+  let cube = {};
+  arr.forEach((row, x) => {
+    row.forEach((value, y) => {
+      setValue(cube, [x, y, ...Array(dimensions - 2).fill(0)], value === '#');
     });
-    arr.push(getEmptyLine(arr.length + 1));
-  }
-
-  let cube = [arr];
-
-  const size = arr.length;
-  for (let i = 0; i < Math.floor(size / 2); ++i) {
-    cube.unshift(getEmptySpace(size));
-    cube.push(getEmptySpace(size));
-  }
+  });
 
   for (let i = 0; i < MAX_CYCLES; ++i) {
-    cube = getNextCube(cube);
+    const newCube = { ...cube };
+    Object.keys(cube).forEach((key) => {
+      const coordinates = key.split(',').map((i) => +i);
+      const offsets = getOffsets(coordinates.length);
+      offsets.forEach((offset) => {
+        const newCoordinates = coordinates.map((c, i) => c + offset[i]);
+        const value = getValue(cube, newCoordinates);
+        let count = getNeighbours(cube, newCoordinates).filter((i) => i).length;
+        count -= value ? 1 : 0; // delete if cell is active
+        setValue(newCube, newCoordinates, (value && count === 2) || count === 3);
+      });
+    });
+    cube = newCube;
   }
-
-  console.log(cube.flat(2).filter((i) => i === '#').length);
-}
-
-function getNextCube(cube) {
-  const eCube = expand(cube);
-  const nextCube = expand(cube);
-
-  const size = eCube.length;
-
-  for (let z = 0; z < size; ++z) {
-    for (let y = 0; y < size; ++y) {
-      for (let x = 0; x < size; ++x) {
-        nextCube[z][y][x] = getNextState(eCube, z, y, x);
-      }
-    }
-  }
-
-  return nextCube;
-}
-
-function countActiveNeighbours(cube, z, y, x) {
-  let count = 0;
-  for (let i = 0; i < DIFF.length; ++i) {
-    const dz = DIFF[i];
-    for (let j = 0; j < DIFF.length; ++j) {
-      const dy = DIFF[j];
-      for (let k = 0; k < DIFF.length; ++k) {
-        const dx = DIFF[k];
-        if (dx === 0 && dy === 0 && dz === 0) {
-          continue;
-        }
-        count += isActive(cube, z + dz, y + dy, x + dx) ? 1 : 0;
-      }
-    }
-  }
-  return count;
-}
-
-function getValue(cube, z, y, x) {
-  return cube?.[z]?.[y]?.[x] || '.';
-}
-
-function isActive(cube, z, y, x) {
-  const value = getValue(cube, z, y, x);
-  return value === '#';
-}
-
-function getNextState(cube, z, y, x) {
-  const isActiveCell = isActive(cube, z, y, x);
-  const activeNeightbours = countActiveNeighbours(cube, z, y, x);
-  return (isActiveCell && activeNeightbours === 2) || activeNeightbours === 3 ? '#' : '.';
-}
-
-function expand(cube) {
-  const size = cube.length;
-  const nextSize = size + 2;
-  return [
-    getEmptySpace(nextSize),
-    ...cube.map((space) => {
-      return [
-        getEmptyLine(nextSize),
-        ...space.map((line) => {
-          return ['.', ...line, '.'];
-        }),
-        getEmptyLine(nextSize),
-      ];
-    }),
-    getEmptySpace(nextSize),
-  ];
-}
-
-function getEmptySpace(size) {
-  return Array(size)
-    .fill()
-    .map(() => getEmptyLine(size));
-}
-
-function getEmptyLine(size) {
-  return Array(size)
-    .fill()
-    .map(() => '.');
-}
-
-function print(cube) {
-  cube.forEach((space) => {
-    const separator = Array(space.length * 2 + 3)
-      .fill()
-      .map(() => '=')
-      .join('');
-    console.log(separator);
-    console.log(space.map((i) => `| ${i.join(' ')} |`).join('\n'));
-    console.log(separator);
-  });
+  return Object.values(cube).filter((i) => i).length;
 }
 
 main().catch(console.error);
