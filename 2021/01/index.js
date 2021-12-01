@@ -1,10 +1,5 @@
-const fs = require('fs');
-const path = require('path');
-
-const input = fs.readFileSync(path.resolve(__dirname, './input.txt'), { encoding: 'utf8' });
-const arr = input.split(/\n/).map((i) => +i);
-
-module.exports.part1 = () => {
+module.exports.part1 = (rows) => {
+  const arr = rows.map(Number);
   let res = 0;
   for (let i = 1; i < arr.length; ++i) {
     if (arr[i] > arr[i - 1]) {
@@ -14,7 +9,8 @@ module.exports.part1 = () => {
   return res;
 };
 
-module.exports.part2 = () => {
+module.exports.part2 = (rows) => {
+  const arr = rows.map(Number);
   let res = 0;
   let window = arr[0] + arr[1] + arr[2];
   for (let i = 3; i < arr.length; ++i) {
@@ -26,5 +22,3 @@ module.exports.part2 = () => {
   }
   return res;
 };
-
-console.log(module.exports.part1());

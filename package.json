@@ -5,7 +5,8 @@
   "description": "Solutions to the adventofcode tasks",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon --config .nodemon.config.json"
+    "dev": "nodemon --config .nodemon.config.json",
+    "dev:2021": "nodemon --config .nodemon.config.json ./2021/main"
   },
   "author": "Oleksandr Bondarchuk",
   "license": "UNLICENSED",

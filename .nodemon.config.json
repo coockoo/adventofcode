@@ -2,6 +2,5 @@
   "watch": ["**/*", "package.json", "package-lock.json"],
   "env": {
     "NODE_ENV": "development"
-  },
-  "verbose": true
+  }
 }
