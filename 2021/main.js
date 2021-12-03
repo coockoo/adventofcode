@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const [, , day, part] = process.argv;
+const [, , day, part, mode] = process.argv;
 
 if (!day) {
   throw new Error('day is required');
@@ -17,16 +17,24 @@ if (!PARTS.includes(part)) {
   throw new Error(`part should be one of ["${PARTS.join('", "')}"]`);
 }
 
-const input = fs.readFileSync(path.resolve(__dirname, day, './input.txt'), 'utf8');
-const rows = input.split(/\n/g);
-
-const demoInput = fs.readFileSync(path.resolve(__dirname, day, './demo.txt'), 'utf8');
-const demoRows = demoInput.split(/\n/g);
-
 const handler = require(`./${day}`);
 
-const demoRes = handler[`part${part}`](demoRows);
-const res = handler[`part${part}`](rows);
+const run = (filename) => {
+  const input = fs.readFileSync(path.resolve(__dirname, day, `./${filename}.txt`), 'utf8');
+  const rows = input.split(/\n/g);
+  const res = handler[`part${part}`](rows);
+  return res;
+};
 
-console.log('Demo result:', demoRes);
-console.log('Part result:', res);
+if (mode === 'part') {
+  const res = run('input');
+  console.log(`${mode} result: `, res);
+} else if (mode === 'demo') {
+  const res = run('demo');
+  console.log(`${mode} result: `, res);
+} else {
+  const demoRes = run('demo');
+  console.log('demo result: ', demoRes);
+  const partRes = run('input');
+  console.log('part result: ', partRes);
+}
