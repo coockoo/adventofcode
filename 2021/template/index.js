@@ -1,3 +1,5 @@
+const { Matrix, Reducer } = require('../../tools');
+
 module.exports.part1 = (rows) => {
   // const arr = rows.map(Number)
   let res = 0;
