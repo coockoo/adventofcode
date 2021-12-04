@@ -1,3 +1,5 @@
+const { Matrix, Reducer } = require('../../tools');
+
 const parseInput = (rows) => {
   const calls = rows[0].split(',');
   let matrices = [];
@@ -12,26 +14,8 @@ const parseInput = (rows) => {
 };
 
 const isWin = (matrix, calls) => {
-  const size = 5;
-  for (let i = 0; i < size; ++i) {
-    if (
-      isRowWin(
-        [matrix[0 + i * size], matrix[1 + i * size], matrix[2 + i * size], matrix[3 + i * size], matrix[4 + i * size]],
-        calls
-      )
-    ) {
-      return true;
-    }
-    if (
-      isRowWin(
-        [matrix[0 * size + i], matrix[1 * size + i], matrix[2 * size + i], matrix[3 * size + i], matrix[4 * size + i]],
-        calls
-      )
-    ) {
-      return true;
-    }
-  }
-  return false;
+  const rows = [...Matrix.getRows(matrix), ...Matrix.getColumns(matrix)];
+  return rows.some((row) => isRowWin(row, calls));
 };
 
 const isRowWin = (row, calls) => {
@@ -39,14 +23,10 @@ const isRowWin = (row, calls) => {
 };
 
 const getWinResult = (matrix, calls) => {
-  const lastCall = calls[calls.length - 1];
-  const unmarked = matrix
-    .filter((i) => !calls.includes(i))
-    .reduce((acc, i) => {
-      acc += +i;
-      return acc;
-    }, 0);
-  return +lastCall * unmarked;
+  const lastCall = +calls[calls.length - 1];
+  const unmarked = matrix.filter((i) => !calls.includes(i));
+  const sum = Reducer.sumOfItems(unmarked);
+  return lastCall * sum;
 };
 
 module.exports.part1 = (rows) => {
