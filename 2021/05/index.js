@@ -1,4 +1,4 @@
-const { Matrix, Reducer } = require('../../tools');
+const { Matrix } = require('../../tools');
 
 const parseInput = (rows) => {
   return rows
@@ -16,61 +16,35 @@ const parseInput = (rows) => {
     });
 };
 
-module.exports.part1 = (rows) => {
+const solve = (rows, { withDiagonal }) => {
   const arr = parseInput(rows);
-  const res = [];
+  const size = Math.max(...arr.flatMap((i) => [i.x1, i.x2, i.y1, i.y2]));
+  const matrix = Array(Math.pow(size + 1, 2));
   for (let i = 0; i < arr.length; ++i) {
     let { x1, x2, y1, y2 } = arr[i];
-    if (x1 !== x2 && y1 !== y2) {
+
+    if (!withDiagonal && x1 !== x2 && y1 !== y2) {
       continue;
     }
-    const fromX = Math.min(x1, x2);
-    const toX = x1 + x2 - fromX;
-    const fromY = Math.min(y1, y2);
-    const toY = y1 + y2 - fromY;
-    for (let x = fromX; x <= toX; ++x) {
-      for (let y = fromY; y <= toY; ++y) {
-        if (!res[1000 * y + x]) {
-          res[1000 * y + x] = 0;
-        }
-        res[1000 * y + x] += 1;
-      }
+
+    const dx = x1 === x2 ? 0 : x1 > x2 ? -1 : 1;
+    const dy = y1 === y2 ? 0 : y1 > y2 ? -1 : 1;
+
+    const cond = (x, y) => {
+      return (dx > 0 ? x <= x2 : x >= x2) && (dy > 0 ? y <= y2 : y >= y2);
+    };
+
+    for (let x = x1, y = y1; cond(x, y); x += dx, y += dy) {
+      Matrix.incItem(matrix, x, y);
     }
   }
-  return res.filter((i) => i >= 2).length;
+  return matrix.filter((i) => i >= 2).length;
+};
+
+module.exports.part1 = (rows) => {
+  return solve(rows, { withDiagonal: false });
 };
 
 module.exports.part2 = (rows) => {
-  const arr = parseInput(rows);
-  const res = [];
-  for (let i = 0; i < arr.length; ++i) {
-    let { x1, x2, y1, y2 } = arr[i];
-
-    if (x1 !== x2 && y1 !== y2) {
-      const dx = x1 > x2 ? -1 : 1;
-      const dy = y1 > y2 ? -1 : 1;
-      for (let x = x1, y = y1; dx > 0 ? x <= x2 : x >= x2; x += dx, y += dy) {
-        if (!res[1000 * y + x]) {
-          res[1000 * y + x] = 0;
-        }
-        res[1000 * y + x] += 1;
-      }
-      continue;
-    }
-
-    const fromX = Math.min(x1, x2);
-    const toX = x1 + x2 - fromX;
-    const fromY = Math.min(y1, y2);
-    const toY = y1 + y2 - fromY;
-
-    for (let x = fromX; x <= toX; ++x) {
-      for (let y = fromY; y <= toY; ++y) {
-        if (!res[1000 * y + x]) {
-          res[1000 * y + x] = 0;
-        }
-        res[1000 * y + x] += 1;
-      }
-    }
-  }
-  return res.filter((i) => i >= 2).length;
+  return solve(rows, { withDiagonal: true });
 };

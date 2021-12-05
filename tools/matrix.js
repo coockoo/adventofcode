@@ -38,10 +38,31 @@ const getColumns = (matrix) => {
   return rows;
 };
 
+const getItem = (matrix, x, y) => {
+  const size = getSize(matrix);
+  return matrix[size * y + x];
+};
+
+const setItem = (matrix, x, y, value) => {
+  const size = getSize(matrix);
+  matrix[size * y + x] = value;
+};
+
+const incItem = (matrix, x, y, amount = 1) => {
+  const size = getSize(matrix);
+  if (!matrix[size * y + x]) {
+    matrix[size * y + x] = 0;
+  }
+  matrix[size * y + x] += amount;
+};
+
 module.exports.Matrix = {
   getSize,
   getRow,
   getRows,
   getColumn,
   getColumns,
+  getItem,
+  setItem,
+  incItem,
 };
