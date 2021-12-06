@@ -2,13 +2,7 @@ const { Reducer } = require('../../tools');
 
 const solve = (rows, iterations) => {
   const arr = rows[0].split(',').map(Number);
-  const state = arr.reduce((acc, item) => {
-    if (!acc[item]) {
-      acc[item] = 0;
-    }
-    acc[item] += 1;
-    return acc;
-  }, {});
+  const state = Reducer.countBy(arr);
 
   for (let i = 0; i < iterations; ++i) {
     const t = state[0] || 0;
