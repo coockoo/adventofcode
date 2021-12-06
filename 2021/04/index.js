@@ -1,4 +1,4 @@
-const { Matrix, Reducer } = require('../../tools');
+import { Matrix, Reducer } from '../../tools/index.js';
 
 const parseInput = (rows) => {
   const calls = rows[0].split(',');
@@ -29,7 +29,7 @@ const getWinResult = (matrix, calls) => {
   return lastCall * sum;
 };
 
-module.exports.part1 = (rows) => {
+export const part1 = (rows) => {
   const [calls, matrices] = parseInput(rows);
   let currentCalls = calls.slice(0, 5);
   for (let i = 5; i < calls.length; ++i) {
@@ -42,7 +42,7 @@ module.exports.part1 = (rows) => {
   }
 };
 
-module.exports.part2 = (rows) => {
+export const part2 = (rows) => {
   let [calls, matrices] = parseInput(rows);
   let currentCalls = calls.slice(0, 5);
   for (let i = 5; i < calls.length; ++i) {

@@ -1,8 +1,8 @@
-const getSize = (matrix) => {
+export const getSize = (matrix) => {
   return Math.sqrt(matrix.length);
 };
 
-const getRow = (matrix, index) => {
+export const getRow = (matrix, index) => {
   const size = getSize(matrix);
   const row = [];
   for (let i = 0; i < size; ++i) {
@@ -11,7 +11,7 @@ const getRow = (matrix, index) => {
   return row;
 };
 
-const getColumn = (matrix, index) => {
+export const getColumn = (matrix, index) => {
   const size = getSize(matrix);
   const row = [];
   for (let i = 0; i < size; ++i) {
@@ -20,7 +20,7 @@ const getColumn = (matrix, index) => {
   return row;
 };
 
-const getRows = (matrix) => {
+export const getRows = (matrix) => {
   let rows = [];
   const size = getSize(matrix);
   for (let i = 0; i < size; ++i) {
@@ -29,7 +29,7 @@ const getRows = (matrix) => {
   return rows;
 };
 
-const getColumns = (matrix) => {
+export const getColumns = (matrix) => {
   let rows = [];
   const size = getSize(matrix);
   for (let i = 0; i < size; ++i) {
@@ -38,31 +38,20 @@ const getColumns = (matrix) => {
   return rows;
 };
 
-const getItem = (matrix, x, y) => {
+export const getItem = (matrix, x, y) => {
   const size = getSize(matrix);
   return matrix[size * y + x];
 };
 
-const setItem = (matrix, x, y, value) => {
+export const setItem = (matrix, x, y, value) => {
   const size = getSize(matrix);
   matrix[size * y + x] = value;
 };
 
-const incItem = (matrix, x, y, amount = 1) => {
+export const incItem = (matrix, x, y, amount = 1) => {
   const size = getSize(matrix);
   if (!matrix[size * y + x]) {
     matrix[size * y + x] = 0;
   }
   matrix[size * y + x] += amount;
-};
-
-module.exports.Matrix = {
-  getSize,
-  getRow,
-  getRows,
-  getColumn,
-  getColumns,
-  getItem,
-  setItem,
-  incItem,
 };

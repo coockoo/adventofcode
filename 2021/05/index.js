@@ -1,4 +1,4 @@
-const { Matrix } = require('../../tools');
+import { Matrix } from '../../tools/index.js';
 
 const parseInput = (rows) => {
   return rows
@@ -41,10 +41,10 @@ const solve = (rows, { withDiagonal }) => {
   return matrix.filter((i) => i >= 2).length;
 };
 
-module.exports.part1 = (rows) => {
+export const part1 = (rows) => {
   return solve(rows, { withDiagonal: false });
 };
 
-module.exports.part2 = (rows) => {
+export const part2 = (rows) => {
   return solve(rows, { withDiagonal: true });
 };

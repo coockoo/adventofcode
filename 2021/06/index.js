@@ -1,4 +1,4 @@
-const { Reducer } = require('../../tools');
+import { Reducer } from '../../tools/index.js';
 
 const solve = (rows, iterations) => {
   const arr = rows[0].split(',').map(Number);
@@ -17,10 +17,10 @@ const solve = (rows, iterations) => {
   return res;
 };
 
-module.exports.part1 = (rows) => {
+export const part1 = (rows) => {
   return solve(rows, 80);
 };
 
-module.exports.part2 = (rows) => {
+export const part2 = (rows) => {
   return solve(rows, 256);
 };

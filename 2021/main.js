@@ -1,5 +1,8 @@
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const [, , day, part, mode] = process.argv;
 
@@ -17,24 +20,27 @@ if (!PARTS.includes(part)) {
   throw new Error(`part should be one of ["${PARTS.join('", "')}"]`);
 }
 
-const handler = require(`./${day}`);
-
-const run = (filename) => {
+const run = async (filename) => {
   const input = fs.readFileSync(path.resolve(__dirname, day, `./${filename}.txt`), 'utf8');
   const rows = input.split(/\n/g);
+  const handler = await import(`./${day}/index.js`);
   const res = handler[`part${part}`](rows);
   return res;
 };
 
-if (mode === 'part') {
-  const res = run('input');
-  console.log(`${mode} result: `, res);
-} else if (mode === 'demo') {
-  const res = run('demo');
-  console.log(`${mode} result: `, res);
-} else {
-  const demoRes = run('demo');
-  console.log('demo result: ', demoRes);
-  const partRes = run('input');
-  console.log('part result: ', partRes);
-}
+const main = async () => {
+  if (mode === 'part') {
+    const res = await run('input');
+    console.log(`${mode} result: `, res);
+  } else if (mode === 'demo') {
+    const res = await run('demo');
+    console.log(`${mode} result: `, res);
+  } else {
+    const demoRes = await run('demo');
+    console.log('demo result: ', demoRes);
+    const partRes = await run('input');
+    console.log('part result: ', partRes);
+  }
+};
+
+main();

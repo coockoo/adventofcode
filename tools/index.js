@@ -1,7 +1,4 @@
-const { Matrix } = require('./matrix');
-const { Reducer } = require('./reducer');
+import * as Matrix from './matrix.js';
+import * as Reducer from './reducer.js';
 
-module.exports = {
-  Matrix,
-  Reducer,
-};
+export { Matrix, Reducer };

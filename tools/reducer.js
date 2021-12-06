@@ -1,8 +1,8 @@
-const sumOfItems = (array) => {
+export const sumOfItems = (array) => {
   return array.reduce((acc, i) => (acc += +i), 0);
 };
 
-const countBy = (array, field) => {
+export const countBy = (array, field) => {
   return array.reduce((acc, item) => {
     const key = field ? item[field] : item;
     if (!acc[key]) {
@@ -11,9 +11,4 @@ const countBy = (array, field) => {
     acc[key] += 1;
     return acc;
   }, {});
-};
-
-module.exports.Reducer = {
-  sumOfItems,
-  countBy,
 };

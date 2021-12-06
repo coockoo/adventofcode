@@ -1,4 +1,4 @@
-module.exports.part1 = (rows) => {
+export const part1 = (rows) => {
   let position = 0;
   let depth = 0;
   for (let i = 0; i < rows.length; ++i) {
@@ -16,7 +16,7 @@ module.exports.part1 = (rows) => {
   return position * depth;
 };
 
-module.exports.part2 = (rows) => {
+export const part2 = (rows) => {
   let position = 0;
   let depth = 0;
   let aim = 0;

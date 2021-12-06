@@ -1,4 +1,4 @@
-module.exports.part1 = (rows) => {
+export const part1 = (rows) => {
   const arr = rows.map(Number);
   let res = 0;
   for (let i = 1; i < arr.length; ++i) {
@@ -9,7 +9,7 @@ module.exports.part1 = (rows) => {
   return res;
 };
 
-module.exports.part2 = (rows) => {
+export const part2 = (rows) => {
   const arr = rows.map(Number);
   let res = 0;
   let window = arr[0] + arr[1] + arr[2];

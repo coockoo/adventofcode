@@ -1,4 +1,4 @@
-module.exports.part1 = (rows) => {
+export const part1 = (rows) => {
   let gamma = 0;
   let epsilon = 0;
 
@@ -26,7 +26,7 @@ module.exports.part1 = (rows) => {
   return gamma * epsilon;
 };
 
-module.exports.part2 = (rows) => {
+export const part2 = (rows) => {
   let oxygenRows = [...rows];
   let index = 0;
   while (oxygenRows.length > 1) {
