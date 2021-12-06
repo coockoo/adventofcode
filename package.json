@@ -1,6 +1,7 @@
 {
   "name": "adventofcode",
   "private": true,
+  "type": "module",
   "version": "1.0.0",
   "description": "Solutions to the adventofcode tasks",
   "main": "index.js",
@@ -13,5 +14,9 @@
   "devDependencies": {
     "nodemon": "^2.0.15",
     "prettier": "^2.5.0"
+  },
+  "dependencies": {
+    "cron": "^1.8.2",
+    "node-fetch": "^3.1.0"
   }
 }
