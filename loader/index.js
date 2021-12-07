@@ -26,5 +26,5 @@ const handler = async () => {
 };
 
 console.log('starting loader...');
-new CronJob('30 0 7 1-25 Dec *', handler, null, true, 'Europe/Kiev');
-console.log('loader started!');
+const job = new CronJob('30 0 7 1-25 Dec *', handler, null, true, 'Europe/Kiev');
+console.log(`loader started! next check: ${job.nextDate().format()}`);

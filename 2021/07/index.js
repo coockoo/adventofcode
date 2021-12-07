@@ -19,7 +19,7 @@ const solve = (rows, distanceFn) => {
 const distance = (arr1, arr2) => {
   let res = 0;
   for (let i = 0; i < arr1.length; ++i) {
-    res += Math.abs(+arr1[i] - +arr2[i]);
+    res += Math.abs(arr1[i] - arr2[i]);
   }
   return res;
 };
@@ -27,7 +27,7 @@ const distance = (arr1, arr2) => {
 const distance2 = (arr1, arr2) => {
   let res = 0;
   for (let i = 0; i < arr1.length; ++i) {
-    let steps = Math.abs(+arr1[i] - +arr2[i]);
+    let steps = Math.abs(arr1[i] - arr2[i]);
     let d = ((1 + steps) * steps) / 2;
     res += d;
   }
