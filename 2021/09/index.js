@@ -1,4 +1,4 @@
-import { Matrix, Reducer } from '../../tools/index.js';
+import { Reducer } from '../../tools/index.js';
 
 const getNeighbours = (arr, row, col) => {
   let n = [arr[row]?.[col - 1], arr[row]?.[col + 1], arr[row - 1]?.[col], arr[row + 1]?.[col]];
@@ -9,71 +9,81 @@ const isLowest = (p, n) => {
   return n.every((i) => i > p);
 };
 
-export const part1 = (rows) => {
-  let arr = [];
+const parseInput = (rows) => {
+  const arr = [];
   for (let i = 0; i < rows.length; ++i) {
-    const b = [];
-    for (let j = 0; j < rows[i].length; ++j) {
-      b.push(+rows[i][j]);
-    }
-    arr.push(b);
+    arr.push(rows[i].split('').map((i) => +i));
   }
+  return arr;
+};
 
+export const part1 = (rows) => {
+  let arr = parseInput(rows);
   let res = 0;
   for (let i = 0; i < rows.length; ++i) {
     for (let j = 0; j < rows[i].length; ++j) {
+      const item = arr[i][j];
       const n = getNeighbours(arr, i, j);
-      res += isLowest(arr[i][j], n) ? arr[i][j] + 1 : 0;
+      res += isLowest(item, n) ? item + 1 : 0;
     }
   }
   return res;
 };
 
 export const part2 = (rows) => {
-  let arr = [];
-  for (let i = 0; i < rows.length; ++i) {
-    const b = [];
-    for (let j = 0; j < rows[i].length; ++j) {
-      b.push(+rows[i][j]);
-    }
-    arr.push(b);
-  }
+  let arr = parseInput(rows);
 
   let res = [];
   let found = {};
   for (let i = 0; i < rows.length; ++i) {
     for (let j = 0; j < rows[i].length; ++j) {
-      if (found[`${i}:${j}`]) {
+      if (isFound(found, i, j)) {
         continue;
       }
-      const size = getBasin(arr, i, j, found);
+      const size = getBasinSize(arr, i, j, found);
       if (size) {
         res.push(size);
       }
     }
   }
-  const t = res.sort((a, b) => b - a);
-  return t[0] * t[1] * t[2];
+
+  const orderedSizes = res.sort((a, b) => b - a);
+  const topThree = orderedSizes.slice(0, 3);
+  return Reducer.productOfItems(topThree);
 };
 
-const getBasin = (arr, row, col, found) => {
+const getBasinSize = (arr, row, col, found) => {
   const item = arr?.[row]?.[col];
   if (item === undefined) {
     return 0;
   }
   if (item === 9) {
-    found[`${row}:${col}`] = true;
+    setFound(found, row, col);
     return 0;
   }
-  if (found[`${row}:${col}`]) {
+  if (isFound(found, row, col)) {
     return 0;
   }
 
   let res = 1;
-  found[`${row}:${col}`] = true;
-  res += getBasin(arr, row, col + 1, found);
-  res += getBasin(arr, row, col - 1, found);
-  res += getBasin(arr, row + 1, col, found);
-  res += getBasin(arr, row - 1, col, found);
+  setFound(found, row, col);
+
+  res += getBasinSize(arr, row, col + 1, found);
+  res += getBasinSize(arr, row, col - 1, found);
+  res += getBasinSize(arr, row + 1, col, found);
+  res += getBasinSize(arr, row - 1, col, found);
+
   return res;
+};
+
+const getKey = (row, col) => {
+  return `${row}:${col}`;
+};
+
+const isFound = (state, row, col) => {
+  return !!state[getKey(row, col)];
+};
+
+const setFound = (state, row, col) => {
+  return (state[getKey(row, col)] = true);
 };

@@ -30,12 +30,12 @@ export const getRows = (matrix) => {
 };
 
 export const getColumns = (matrix) => {
-  let rows = [];
+  let columns = [];
   const size = getSize(matrix);
   for (let i = 0; i < size; ++i) {
-    rows.push(getColumn(matrix, i));
+    columns.push(getColumn(matrix, i));
   }
-  return rows;
+  return columns;
 };
 
 export const getItem = (matrix, x, y) => {
