@@ -70,6 +70,17 @@ export const createMatrix = (initialItems, initialSize) => {
     return items;
   };
 
+  const forEach = (callback) => {
+    for (let i = 0; i < size; ++i) {
+      for (let j = 0; j < size; ++j) {
+        const res = callback(getItem(i, j), i, j);
+        if (res) {
+          return;
+        }
+      }
+    }
+  };
+
   return {
     to2D,
     incAll,
@@ -79,6 +90,7 @@ export const createMatrix = (initialItems, initialSize) => {
     setItem,
     incItem,
     getItems,
+    forEach,
   };
 };
 
@@ -91,4 +103,11 @@ export const NEIGHBOURS_8 = [
   [1, -1],
   [1, 0],
   [1, 1],
+];
+
+export const NEIGHBOURS_4 = [
+  [-1, 0],
+  [0, -1],
+  [0, 1],
+  [1, 0],
 ];

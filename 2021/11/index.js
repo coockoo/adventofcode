@@ -3,7 +3,7 @@ import { Matrix2 } from '../../tools/index.js';
 const SIZE = 10;
 
 const flash = (matrix, i, j, flashed) => {
-  if (flashed[`${i}:${j}`]) {
+  if (flashed.getItem(i, j)) {
     return 0;
   }
 
@@ -15,11 +15,11 @@ const flash = (matrix, i, j, flashed) => {
     return 0;
   }
 
-  flashed[`${i}:${j}`] = true;
+  flashed.setItem(i, j, true);
   matrix.setItem(i, j, 0);
 
   Matrix2.NEIGHBOURS_8.forEach(([di, dj]) => {
-    if (!flashed[`${i + di}:${j + dj}`]) {
+    if (!flashed.getItem(i + di, j + dj)) {
       matrix.incItem(i + di, j + dj);
     }
   });
@@ -34,18 +34,16 @@ export const part1 = (rows) => {
   let iterationsCount = 100;
 
   for (let c = 0; c < iterationsCount; ++c) {
-    let flashed = {};
-    let localres = 0;
+    const flashed = Matrix2.fillSquare(SIZE, false);
 
     matrix.incAll();
 
+    let localres = 0;
     do {
       localres = 0;
-      for (let i = 0; i < SIZE; ++i) {
-        for (let j = 0; j < SIZE; ++j) {
-          localres += flash(matrix, i, j, flashed);
-        }
-      }
+      matrix.forEach((_item, i, j) => {
+        localres += flash(matrix, i, j, flashed);
+      });
       res += localres;
     } while (localres > 0);
   }
@@ -59,18 +57,16 @@ export const part2 = (rows) => {
 
   while (true) {
     iteration += 1;
-    const flashed = {};
+    const flashed = Matrix2.fillSquare(SIZE, false);
 
     matrix.incAll();
 
     let localres = 0;
     do {
       localres = 0;
-      for (let i = 0; i < SIZE; ++i) {
-        for (let j = 0; j < SIZE; ++j) {
-          localres += flash(matrix, i, j, flashed);
-        }
-      }
+      matrix.forEach((_item, i, j) => {
+        localres += flash(matrix, i, j, flashed);
+      });
     } while (localres > 0);
 
     if (matrix.getItems().every((i) => i === 0)) {
