@@ -1,10 +1,17 @@
 import { Matrix, Reducer } from '../../tools/index.js';
 
-const amount = {
+const corruptedPoints = {
   ')': 3,
   ']': 57,
   '}': 1197,
   '>': 25137,
+};
+
+const incompletePoints = {
+  '(': 1,
+  '[': 2,
+  '{': 3,
+  '<': 4,
 };
 
 export const part1 = (rows) => {
@@ -17,19 +24,19 @@ export const part1 = (rows) => {
       } else {
         const last = stack.pop();
         if (last === '(' && rows[i][j] !== ')') {
-          res += amount[rows[i][j]];
+          res += corruptedPoints[rows[i][j]];
           break;
         }
         if (last === '[' && rows[i][j] !== ']') {
-          res += amount[rows[i][j]];
+          res += corruptedPoints[rows[i][j]];
           break;
         }
         if (last === '{' && rows[i][j] !== '}') {
-          res += amount[rows[i][j]];
+          res += corruptedPoints[rows[i][j]];
           break;
         }
         if (last === '<' && rows[i][j] !== '>') {
-          res += amount[rows[i][j]];
+          res += corruptedPoints[rows[i][j]];
           break;
         }
       }
@@ -73,21 +80,8 @@ export const part2 = (rows) => {
       let localres = 0;
       while (stack.length) {
         const last = stack.pop();
-        if (last === '(') {
-          localres *= 5;
-          localres += 1;
-        } else if (last === '[') {
-          localres *= 5;
-          localres += 2;
-        }
-        if (last === '{') {
-          localres *= 5;
-          localres += 3;
-        }
-        if (last === '<') {
-          localres *= 5;
-          localres += 4;
-        }
+        localres *= 5;
+        localres += incompletePoints[last];
       }
       res.push(localres);
     }
