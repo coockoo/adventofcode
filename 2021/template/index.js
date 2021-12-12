@@ -1,4 +1,4 @@
-import { Matrix, Reducer } from '../../tools/index.js';
+import { Matrix, Matrix2, Reducer } from '../../tools/index.js';
 
 export const part1 = (rows) => {
   // const arr = rows.map(Number)
