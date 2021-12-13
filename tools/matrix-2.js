@@ -19,6 +19,11 @@ export const fillSquare = (size, initialValue) => {
   return createMatrix(items, size);
 };
 
+export const fill = (sizeX, sizeY, initialValue) => {
+  const items = new Array(sizeX * sizeY).fill(initialValue);
+  return createMatrix(items, sizeX);
+};
+
 export const createMatrix = (initialItems, initialSize) => {
   let items = [...initialItems];
   let size = initialSize;
@@ -32,7 +37,8 @@ export const createMatrix = (initialItems, initialSize) => {
   };
 
   const toString = () => {
-    const maxLen = Math.max(...items.map((i) => `${i}`.length));
+    // const maxLen = Math.max(...items.map((i) => `${i}`.length));
+    const maxLen = 1;
     return to2D()
       .map((row) => row.map((i) => `${i}`.padStart(maxLen, ' ')).join(' '))
       .join('\n');
@@ -81,6 +87,25 @@ export const createMatrix = (initialItems, initialSize) => {
     }
   };
 
+  const clone = () => {
+    return createMatrix([...items], size);
+  };
+
+  const deleteRow = (row) => {
+    items = [...items.slice(0, size * row), ...items.slice(size * (row + 1))];
+  };
+
+  const deleteColumn = (column) => {
+    let newItems = [];
+    for (let i = 0; i < items.length; ++i) {
+      if (i % size !== column) {
+        newItems.push(items[i]);
+      }
+    }
+    items = newItems;
+    size = size - 1;
+  };
+
   return {
     to2D,
     incAll,
@@ -91,6 +116,9 @@ export const createMatrix = (initialItems, initialSize) => {
     incItem,
     getItems,
     forEach,
+    clone,
+    deleteRow,
+    deleteColumn,
   };
 };
 
