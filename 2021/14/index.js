@@ -12,32 +12,7 @@ const parseInput = (rows) => {
   return [poly, sub];
 };
 
-export const part1 = (rows) => {
-  let [poly, sub] = parseInput(rows);
-
-  for (let c = 0; c < 10; ++c) {
-    let newPoly = [];
-    for (let i = 0; i < poly.length; ++i) {
-      newPoly.push(poly[i]);
-      const k = [poly[i], poly[i + 1]].join('');
-      if (sub[k]) {
-        newPoly.push(sub[k]);
-      }
-    }
-    poly = newPoly;
-  }
-
-  const r = {};
-  for (let i = 0; i < poly.length; ++i) {
-    if (!r[poly[i]]) {
-      r[poly[i]] = 0;
-    }
-    r[poly[i]] += 1;
-  }
-  return Math.max(...Object.values(r)) - Math.min(...Object.values(r));
-};
-
-export const part2 = (rows) => {
+const solve = (rows, iterations) => {
   let [poly, sub] = parseInput(rows);
 
   let obj = {};
@@ -50,7 +25,7 @@ export const part2 = (rows) => {
     obj[k] += 1;
   }
 
-  for (let c = 0; c < 40; ++c) {
+  for (let c = 0; c < iterations; ++c) {
     let newObj = {};
     const keys = Object.keys(obj);
     for (let i = 0; i < keys.length; ++i) {
@@ -75,20 +50,28 @@ export const part2 = (rows) => {
 
   const keys = Object.keys(obj);
 
-  const res = {};
+  const res = {
+    [poly[0]]: 1,
+    [poly[poly.length - 1]]: 1,
+  };
+
   for (let i = 0; i < keys.length; ++i) {
     const key = keys[i];
     const [l, r] = key.split('');
     if (!res[l]) {
       res[l] = 0;
     }
-    res[l] += Math.ceil(obj[key] / 2);
+    res[l] += obj[key];
 
     if (!res[r]) {
       res[r] = 0;
     }
-    res[r] += Math.ceil(obj[key] / 2);
+    res[r] += obj[key];
   }
 
-  return Math.max(...Object.values(res)) - Math.min(...Object.values(res));
+  let values = Object.values(res);
+  return (Math.max(...values) - Math.min(...values)) / 2;
 };
+
+export const part1 = (rows) => solve(rows, 10);
+export const part2 = (rows) => solve(rows, 40);
