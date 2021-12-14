@@ -38,12 +38,12 @@ export const part1 = (rows) => {
 };
 
 export const part2 = (rows) => {
-  let [poly1, sub] = parseInput(rows);
+  let [poly, sub] = parseInput(rows);
 
   let obj = {};
 
-  for (let i = 0; i < poly1.length - 1; ++i) {
-    const k = [poly1[i], poly1[i + 1]].join('');
+  for (let i = 0; i < poly.length - 1; ++i) {
+    const k = [poly[i], poly[i + 1]].join('');
     if (!obj[k]) {
       obj[k] = 0;
     }
