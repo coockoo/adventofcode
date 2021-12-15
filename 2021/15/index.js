@@ -55,14 +55,15 @@ export const part2 = (rows) => {
   const m = matrix.to2D();
 
   let points = [[0, 0]];
+  let zk = getKey(points[0]);
 
   let target = [m.length * 5 - 1, m[0].length * 5 - 1];
   let tk = getKey(target);
-  let weights = { [getKey(points[0])]: 0 };
-  let visited = { '0:0': true };
+
+  let weights = { [zk]: 0 };
+  let visited = { [zk]: true };
 
   while (points.length) {
-    console.log(points.length);
     let point = getPriorityPoint(points, weights);
     let pk = getKey(point);
     const ds = Matrix2.NEIGHBOURS_4;
