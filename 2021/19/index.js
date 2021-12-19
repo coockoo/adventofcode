@@ -72,6 +72,14 @@ const parseInput = (rows) => {
   return scanners;
 };
 
+const distance = (fromPoint, toPoint) => {
+  let res = 0;
+  for (let i = 0; i < 3; ++i) {
+    res += Math.abs(fromPoint[i] - toPoint[i]);
+  }
+  return res;
+};
+
 const toAbsolute = (point, refPoint) => {
   const [x, y, z] = point;
   const [rx, ry, rz] = refPoint;
@@ -176,16 +184,7 @@ export const part2 = (rows) => {
   const values = Object.values(refs);
   for (let i = 0; i < values.length; ++i) {
     for (let j = 0; j < values.length; ++j) {
-      if (i === j) {
-        continue;
-      }
-      let d =
-        Math.abs(values[i][0] - values[j][0]) +
-        Math.abs(values[i][1] - values[j][1]) +
-        Math.abs(values[i][2] - values[j][2]);
-      if (d > max) {
-        max = d;
-      }
+      max = Math.max(max, distance(values[i], values[j]));
     }
   }
   return max;
