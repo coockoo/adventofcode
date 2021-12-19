@@ -29,17 +29,27 @@ const run = async (filename) => {
 };
 
 const main = async () => {
+  const start = Date.now();
+
+  const logResult = (mode, res) => {
+    const end = Date.now();
+    const duration = end - start;
+    const time = duration > 1000 ? (duration / 1000).toFixed(3) : duration;
+    const metric = duration > 1000 ? 's' : 'ms';
+    console.log('%s result: %s (%d%s)', mode, res, time, metric);
+  };
+
   if (mode === 'part') {
     const res = await run('input');
-    console.log(`${mode} result: `, res);
+    logResult(mode, res);
   } else if (mode === 'demo') {
     const res = await run('demo');
-    console.log(`${mode} result: `, res);
+    logResult(mode, res);
   } else {
     const demoRes = await run('demo');
-    console.log('demo result: ', demoRes);
+    logResult('demo', demoRes);
     const partRes = await run('input');
-    console.log('part result: ', partRes);
+    logResult('part', partRes);
   }
 };
 
