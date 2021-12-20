@@ -132,6 +132,17 @@ export const NEIGHBOURS_8 = [
   [1, 0],
   [1, 1],
 ];
+export const NEIGHBOURS_9 = [
+  [-1, -1],
+  [-1, 0],
+  [-1, 1],
+  [0, -1],
+  [0, 0],
+  [0, 1],
+  [1, -1],
+  [1, 0],
+  [1, 1],
+];
 
 export const NEIGHBOURS_4 = [
   [-1, 0],
