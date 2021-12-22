@@ -6,7 +6,6 @@ import { fileURLToPath } from 'url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const handler = async () => {
-  console.log('starting loader...');
   const now = new Date();
   const day = `${now.getDate()}`;
   const year = `${now.getFullYear()}`;
