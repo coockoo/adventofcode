@@ -43,7 +43,6 @@ const move = (m, rows, cols) => {
       newM[key] = m[key];
     }
   }
-  print(newM, rows, cols);
 
   m = newM;
   newM = {};
@@ -71,27 +70,13 @@ const move = (m, rows, cols) => {
   return [newM, moves];
 };
 
-const print = (m, rows, cols) => {
-  for (let i = 0; i < rows; ++i) {
-    let arr = [];
-    for (let j = 0; j < cols; ++j) {
-      arr.push(m[getKey(i, j)]);
-    }
-  }
-};
-
 export const part1 = (input) => {
   let [m, rows, cols] = parseInput(input);
   let moves;
   let count = 0;
   do {
     count += 1;
-    moves = 0;
-    let [newM, newMoves] = move(m, rows, cols);
-    print(m, rows, cols);
-    m = newM;
-    print(newM, rows, cols);
-    moves = newMoves;
+    [m, moves] = move(m, rows, cols);
   } while (moves > 0);
   return count;
 };
