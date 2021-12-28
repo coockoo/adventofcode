@@ -45,6 +45,9 @@ const main = async () => {
   } else if (mode === 'demo') {
     const res = await run('demo');
     logResult(mode, res);
+  } else if (mode) {
+    const res = await run(mode);
+    logResult(mode, res);
   } else {
     const demoRes = await run('demo');
     logResult('demo', demoRes);
