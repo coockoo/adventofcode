@@ -1,3 +1,23 @@
+const scores = {
+  A: 1,
+  B: 2,
+  C: 3,
+  X: 1,
+  Y: 2,
+  Z: 3,
+};
+
+const isWin = (an, bn) => {
+  const r = bn - an;
+  return r === 1 || r === -2;
+};
+
+const next = (score) => (score % 3) + 1;
+const prev = (score) => {
+  const t = score - 1;
+  return t <= 0 ? 3 : t;
+};
+
 export const part1 = (rows) => {
   let res = 0;
   for (const idx in rows) {
@@ -6,12 +26,13 @@ export const part1 = (rows) => {
       continue;
     }
     const [a, b] = row.split(' ');
-    const bn = b === 'X' ? 1 : b === 'Y' ? 2 : 3;
+    const an = scores[a];
+    const bn = scores[b];
     res += bn;
-    if ((a === 'A' && b === 'Y') || (a === 'B' && b === 'Z') || (a === 'C' && b === 'X')) {
+    if (isWin(an, bn)) {
       res += 6;
     }
-    if ((a === 'A' && b === 'X') || (a === 'B' && b === 'Y') || (a === 'C' && b === 'Z')) {
+    if (an == bn) {
       res += 3;
     }
   }
@@ -26,17 +47,15 @@ export const part2 = (rows) => {
       continue;
     }
     const [a, b] = row.split(' ');
-    const an = a === 'A' ? 1 : a === 'B' ? 2 : 3;
+    const an = scores[a];
     if (b === 'X') {
-      const t = an - 1;
-      res += t <= 0 ? 3 : t;
+      res += prev(an);
     }
     if (b === 'Y') {
       res += 3 + an;
     }
     if (b === 'Z') {
-      const t = an + 1;
-      res += 6 + (t > 3 ? 1 : t);
+      res += 6 + next(an);
     }
   }
   return res;
