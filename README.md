@@ -13,4 +13,8 @@ chaged value, parsing, permutation etc.
 
 The last row of the text input is empty string. Due to this there might be bugs in the program.
 
+### Number
+
+If the input is of `number` type – always convert it to `number`, as string comparison does not work well with `10+` values.
+
 [aoc]: https://adventofcode.com/

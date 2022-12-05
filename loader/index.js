@@ -20,7 +20,7 @@ const handler = async () => {
   const input = await response.text();
 
   const pathToInput = path.resolve(__dirname, '..', year, day.padStart(2, '0'), 'input.txt');
-  fs.writeFileSync(pathToInput, input.trim(), { flag: 'w' });
+  fs.writeFileSync(pathToInput, input, { flag: 'w' });
   console.log(`successfully written input to file ${pathToInput}`);
 };
 
