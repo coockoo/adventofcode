@@ -65,7 +65,7 @@ const solve = (rows, isInitial) => {
 
   let current = null;
   do {
-    current = routes.shift();
+    current = routes.pop();
     if (!current) {
       break;
     }
@@ -84,7 +84,7 @@ const solve = (rows, isInitial) => {
         routes.push(move);
       }
     }
-    routes = routes.sort((a, b) => ds[getKey(a)] - ds[getKey(b)]);
+    routes = routes.sort((a, b) => ds[getKey(b)] - ds[getKey(a)]);
   } while (getKey(current) !== getKey(end));
 
   return ds[getKey(end)];
