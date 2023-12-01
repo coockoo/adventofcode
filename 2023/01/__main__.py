@@ -1,8 +1,3 @@
-a = {}
-a['kappa'] = 10
-for i in range(10):
-    a[i] = {}
-
 nums = {
     'one': 1,
     'two': 2,
