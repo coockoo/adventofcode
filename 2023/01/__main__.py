@@ -25,27 +25,31 @@ def get_key(line: str) -> int:
             return key
 
 
-res = 0
-with open('./2023/01/input.txt', 'r', encoding='utf-8') as f:
-    content = f.read()
-    lines = content.split('\n')
+def solve(lines: list[str], part: int) -> str:
+    res = 0
     for line in lines:
         if not line:
             continue
-        first = ''
-        last = ''
+        first: int = None
+        last: int = None
         for i in range(len(line)):
             char = line[i]
-            k = get_key(line[i:])
-            print('key', k)
-            if not first and k:
-                first = nums[k]
-            if not first and char >= '0' and char <= '9':
-                first = char
+            if part == 2:
+                key = get_key(line[i:])
+                if key:
+                    last = nums[key]
+                    if first is None:
+                        first = nums[key]
             if char >= '0' and char <= '9':
                 last = char
-            if k:
-                last = nums[k]
+                if first is None:
+                    first = char
         res += int(first) * 10 + int(last)
+    return res
 
-print(res)
+
+with open('./2023/01/input.txt', 'r', encoding='utf-8') as f:
+    content = f.read()
+    lines = content.split('\n')
+    print('part 1', solve(lines, 1))
+    print('part 2', solve(lines, 2))
