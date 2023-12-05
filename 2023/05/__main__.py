@@ -1,3 +1,19 @@
+def process_mode(mode, seeds, seeds_dict):
+    if not mode:
+        return
+    source, _, dest = mode
+    for seed in seeds:
+        source_value = seeds_dict.get(seed).get(source)
+        found = False
+        for dest_m, source_m, diff in mappings:
+            dv = source_value - source_m
+            if dv >= 0 and dv < diff:
+                seeds_dict[seed][dest] = dv + dest_m
+                found = True
+        if not found:
+            seeds_dict[seed][dest] = source_value
+
+
 with open('./2023/05/input.txt', 'r', encoding='utf-8') as f:
     content = f.read()
     lines = content.split('\n')
@@ -19,40 +35,14 @@ with open('./2023/05/input.txt', 'r', encoding='utf-8') as f:
         if not line:
             continue
         if line.endswith(':'):
-            if mode:
-                s = mode[0]
-                d = mode[2]
-                for seed in seeds:
-                    sd = seeds_dict.get(seed)
-                    sv = sd.get(s)
-                    found = False
-                    for mapping in mappings:
-                        dv = sv - mapping[1]
-                        if dv >= 0 and dv < mapping[2]:
-                            seeds_dict[seed][d] = dv + mapping[0]
-                            found = True
-                    if not found:
-                        seeds_dict[seed][d] = sv
+            process_mode(mode, seeds, seeds_dict)
             mode, _ = line.split(' ')
             mode = mode.split('-')
             mappings = []
         else:
             mappings.append(list(map(int, line.split(' '))))
-    if mode:
-        s = mode[0]
-        d = mode[2]
-        for seed in seeds:
-            sd = seeds_dict.get(seed)
-            sv = sd.get(s)
-            found = False
-            for mapping in mappings:
-                dv = sv - mapping[1]
-                if dv >= 0 and dv < mapping[2]:
-                    seeds_dict[seed][d] = dv + mapping[0]
-                    found = True
-            if not found:
-                seeds_dict[seed][d] = sv
-    res = 999999999 
+    process_mode(mode, seeds, seeds_dict)
+    res = 999999999
     for seed in seeds:
         sd = seeds_dict.get(seed)
         res = min(res, sd.get('location'))
