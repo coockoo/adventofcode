@@ -1,4 +1,4 @@
-def process_mode(mode, seeds, seeds_dict):
+def process_mode(mode, seeds, seeds_dict, mappings):
     if not mode:
         return
     source, _, dest = mode
@@ -14,10 +14,7 @@ def process_mode(mode, seeds, seeds_dict):
             seeds_dict[seed][dest] = source_value
 
 
-with open('./2023/05/input.txt', 'r', encoding='utf-8') as f:
-    content = f.read()
-    lines = content.split('\n')
-
+def part1(lines):
     _, seeds = lines[0].split(':')
     seeds = list(map(int, seeds.strip().split(' ')))
 
@@ -35,16 +32,22 @@ with open('./2023/05/input.txt', 'r', encoding='utf-8') as f:
         if not line:
             continue
         if line.endswith(':'):
-            process_mode(mode, seeds, seeds_dict)
+            process_mode(mode, seeds, seeds_dict, mappings)
             mode, _ = line.split(' ')
             mode = mode.split('-')
             mappings = []
         else:
             mappings.append(list(map(int, line.split(' '))))
-    process_mode(mode, seeds, seeds_dict)
+    process_mode(mode, seeds, seeds_dict, mappings)
     res = 999999999
     for seed in seeds:
         sd = seeds_dict.get(seed)
         res = min(res, sd.get('location'))
+    return res
 
-    print('part 1', res)
+
+with open('./2023/05/input.txt', 'r', encoding='utf-8') as f:
+    content = f.read()
+    lines = content.split('\n')
+
+    print('part 1', part1(lines))
