@@ -1,32 +1,27 @@
+from math import lcm, prod
+
 def step(current, counter, dirs, nodes):
     dir = dirs[counter % len(dirs)]
     cn = nodes.get(current)
     return cn[0] if dir == 'L' else cn[1]
 
 
-def run(start: str, dirs, nodes):
-    counter = 0
+def run(start: str, dirs, nodes, check_fn):
     current = start
+    counter = 0
     while True:
-        if current == 'ZZZ':
+        if check_fn(current):
             return counter
         current = step(current, counter, dirs, nodes)
         counter += 1
 
-
-def run2(starts: str, dirs, nodes):
-    counter = 0
-    current = starts
-    while True:
-        print(counter)
-        if all(t.endswith('Z') for t in current):
-            return counter
-        nc = []
-        for i in current:
-            nc.append(step(i, counter, dirs, nodes))
-        current = nc
-        counter += 1
-
+def parse_nodes(lines: list[str]):
+    nodes = {}
+    for line in lines[2:]:
+        if not line:
+            continue
+        nodes[line[0:3]] = (line[7:10], line[12:15])
+    return nodes
 
 def main():
     with open('./2023/08/input.txt', 'r', encoding='utf-8') as f:
@@ -34,19 +29,16 @@ def main():
         lines = content.split('\n')
 
         dirs = lines[0]
+        nodes = parse_nodes(lines)
 
-        nodes = {}
-        for line in lines[2:]:
-            if not line:
-                continue
-            nodes[line[0:3]] = (line[7:10], line[12:15])
+        print('part 1', run('AAA', dirs, nodes, lambda c: c == 'ZZZ'))
 
         starts = list(filter(lambda val: val.endswith('A'), nodes.keys()))
-        res = run2(starts, dirs, nodes)
-        print('part 2', res)
-
-
-        # print('part 1', run('AAA', dirs, nodes))
+        t = []
+        for start in starts:
+            t.append(run(start, dirs, nodes, lambda c: c.endswith('Z')))
+        # CRT + least common multiple 
+        print('part 2', lcm(*t))
 
 
 main()
