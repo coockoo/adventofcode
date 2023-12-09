@@ -1,4 +1,5 @@
-from math import lcm, prod
+from math import lcm
+
 
 def step(current, counter, dirs, nodes):
     dir = dirs[counter % len(dirs)]
@@ -15,6 +16,7 @@ def run(start: str, dirs, nodes, check_fn):
         current = step(current, counter, dirs, nodes)
         counter += 1
 
+
 def parse_nodes(lines: list[str]):
     nodes = {}
     for line in lines[2:]:
@@ -22,6 +24,7 @@ def parse_nodes(lines: list[str]):
             continue
         nodes[line[0:3]] = (line[7:10], line[12:15])
     return nodes
+
 
 def main():
     with open('./2023/08/input.txt', 'r', encoding='utf-8') as f:
@@ -37,7 +40,6 @@ def main():
         t = []
         for start in starts:
             t.append(run(start, dirs, nodes, lambda c: c.endswith('Z')))
-        # CRT + least common multiple 
         print('part 2', lcm(*t))
 
 
