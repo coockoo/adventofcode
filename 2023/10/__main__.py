@@ -2,26 +2,18 @@ def get_key(x: int, y: int) -> str:
     return str(y) + ':' + str(x)
 
 
-def dirs(map, size: int, x: int, y: int) -> str:
-    res = []
-    v = map.get(get_key(x, y))
-    left = (x-1, y)
+def neighbours(x, y):
+    left = (x - 1, y)
     right = (x + 1, y)
     top = (x, y - 1)
     bot = (x, y + 1)
-    if v == 'S':
-        lv = map.get(get_key(*left))
-        if lv == 'F' or lv == 'L' or lv == '-':
-            res.append(left)
-        rv = map.get(get_key(*right))
-        if rv == 'J' or rv == '7' or rv == '-':
-            res.append(right)
-        tv = map.get(get_key(*top))
-        if tv == '7' or rv == 'F' or tv == '|':
-            res.append(top)
-        bv = map.get(get_key(*bot))
-        if bv == 'J' or bv == 'L' or bv == '|':
-            res.append(bot)
+    return (left, right, top, bot)
+
+
+def dirs(map, size: tuple[int, int], x: int, y: int) -> str:
+    res = []
+    v = map.get(get_key(x, y))
+    left, right, top, bot = neighbours(x, y)
     if v == '7':
         res = [left, bot]
     if v == 'F':
@@ -35,7 +27,28 @@ def dirs(map, size: int, x: int, y: int) -> str:
     if v == '-':
         res = [left, right]
 
-    return list(filter(lambda i: i[0] >= 0 and i[1] >= 0 and i[0] < size and i[1] < size and map.get(get_key(*i)) != '.', res))
+    return list(filter(lambda i: i[0] >= 0 and i[1] >= 0 and i[0] < size[0] and i[1] < size[1] and map.get(get_key(*i)) != '.', res))
+
+
+def ray(map, poly, size: tuple[int, int], x: int, y: int) -> bool:
+    if (x, y) in poly:
+        return False
+
+    count = 0
+    fr = '.'
+    for iy in range(0, y):
+        p = (x, iy)
+        v = map.get(get_key(*p))
+        if not v or v == '|' or v == '.' or p not in poly:
+            continue
+        if v == '7' or v == 'F' or v == '-':
+            fr = v
+            count += 1
+        if v == 'L' and fr == 'F':
+            count -= 1
+        if v == 'J' and fr == '7':
+            count -= 1
+    return count % 2 != 0
 
 
 def main():
@@ -44,7 +57,7 @@ def main():
         lines = content.split('\n')
 
         map = {}
-        size = len(lines[0])
+        size = (len(lines[0]), len(lines) - 1)
         ranges = {}
 
         q = []
@@ -56,7 +69,10 @@ def main():
                 if (c == 'S'):
                     q.append((x, y))
                     ranges[get_key(x, y)] = 0
+                    # TODO: haha, manual work instead of bunch of ifs
+                    map[get_key(x, y)] = 'F'
 
+        poly = [q[0]]
         while len(q):
             current = q.pop()
             c_key = get_key(*current)
@@ -67,8 +83,17 @@ def main():
                     continue
                 ranges[d_key] = next
                 q.append(d)
+                poly.append(d)
 
         print('Part 1', max(ranges.values()))
+
+        res = 0
+        for x in range(0, size[0]):
+            for y in range(0, size[1]):
+                if ray(map, poly, size, x, y):
+                    res += 1
+
+        print('Part 2', res)
 
 
 main()
