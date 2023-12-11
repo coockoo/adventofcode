@@ -1,5 +1,5 @@
-import fs from 'fs';
-import path from 'path';
+import fs from 'node:fs/promises';
+import path from 'node:path';
 import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -10,7 +10,8 @@ const handler = async () => {
   const day = process.argv[3] || `${now.getDate()}`;
   console.log(`getting input for ${year} ${day}`);
 
-  const cookie = fs.readFileSync(path.resolve(__dirname, 'cookie.txt'), 'utf8').trim();
+  let cookie = await fs.readFile(path.resolve(__dirname, 'cookie.txt'), 'utf8');
+  cookie = cookie.trim();
   const response = await fetch(`https://adventofcode.com/${year}/day/${day}/input`, {
     headers: {
       cookie,
@@ -18,8 +19,10 @@ const handler = async () => {
   });
   const input = await response.text();
 
-  const pathToInput = path.resolve(__dirname, '..', year, day.padStart(2, '0'), 'input.txt');
-  fs.writeFileSync(pathToInput, input, { flag: 'w' });
+  const dir = path.resolve(__dirname, '..', year, day.padStart(2, '0'));
+  await fs.mkdir(dir, { recursive: true });
+  const pathToInput = path.resolve(dir, 'input.txt');
+  await fs.writeFile(pathToInput, input, { flag: 'w' });
   console.log(`successfully written input to file ${pathToInput}`);
 };
 
