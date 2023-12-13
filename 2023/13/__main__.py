@@ -3,11 +3,11 @@ def transpose(rows: list[str]) -> list[str]:
 
 
 def diff_count(a: str, b: str) -> bool:
-    return sum([1 if a[i] != b[i] else 0 for i in range(len(a))])
+    return sum(1 if a[i] != b[i] else 0 for i in range(len(a)))
 
 
 def lists_eq(a: list[str], b: list[str], accuracy: int) -> bool:
-    s = sum([diff_count(a[i], b[i]) for i in range(min(len(a), len(b)))])
+    s = sum(diff_count(a[i], b[i]) for i in range(min(len(a), len(b))))
     return s == accuracy
 
 
