@@ -1,3 +1,6 @@
+from os import path
+
+
 def transpose(rows: list[str]) -> list[str]:
     return [''.join([r[i] for r in rows]) for i in range(len(rows[0]))]
 
@@ -17,7 +20,8 @@ def part1(rows: list[str]) -> int:
 
 
 def main():
-    with open('./2023/14/input.txt', 'r', encoding='utf-8') as f:
+    inp = path.join(path.dirname(__file__), 'input.txt')
+    with open(inp, 'r', encoding='utf-8') as f:
         content = f.read()
         lines = content.split('\n')
 
