@@ -19,38 +19,44 @@ def trim(pattern: str) -> str:
 
 
 def solve(pattern: str, positions: list[int], cache={}, depth: int = 0) -> int:
-    # pad = ''.join(' ' for i in range(depth))
-    # print(pad, 'calculating', f'"{pattern}"', positions)
     res = 0
 
     key = f'{pattern}:{",".join(str(p) for p in positions)}'
-    if cache.get(key):
-        # print('cache hit', key)
+    if cache.get(key) is not None:
         return cache.get(key)
 
     if not len(positions):
         if '#' in pattern:
-            # print(pad, 'no positions and hash')
+            cache[key] = 0
             return 0
-        # print(pad, 'no positions no hash')
+        cache[key] = 1
         return 1
     if not len(pattern):
-        # print(pad, 'empty pattern')
+        cache[key] = 0
+        return 0
+    if sum(positions) + len(positions) - 1 > len(pattern):
+        cache[key] = 0
         return 0
 
     if is_cool(pattern, positions[0]):
-        # print(pad, 'start cool', pattern, positions[0])
         deepres = solve(trim(pattern[positions[0] + 1:]), positions[1:], cache, depth + 1)
-        # print(pad, 'solved cool', deepres)
         res += deepres
     if (pattern.startswith('?')):
-        # print(pad, 'start questionmark', pattern, positions[0])
         deepres = solve(trim(pattern[1:]), positions, cache, depth + 1)
-        # print(pad, 'solved questionmark', deepres)
         res += deepres
 
     cache[key] = res
-    # print(pad, 'solved', res)
+    return res
+
+
+def solve_lines(lines: list[str], times: int) -> int:
+    res = 0
+    for line in lines:
+        pattern, positions = line.split(' ')
+        pattern = '?'.join([pattern] * times)
+        pattern = trim(pattern)
+        positions = [int(i) for i in positions.split(',')] * times
+        res += solve(pattern, positions)
     return res
 
 
@@ -60,19 +66,8 @@ def main():
         content = f.read()
         lines = list(line for line in content.split('\n') if line)
 
-        times = 1
-        res = 0
-        for idx, line in enumerate(lines):
-            # print(idx + 1, 'of', len(lines))
-            pattern, positions = line.split(' ')
-            pattern = '?'.join([pattern] * times)
-            pattern = trim(pattern)
-            positions = [int(i) for i in positions.split(',')] * times
-            res += solve(pattern, positions)
-
-            # print(pattern, positions, solve(pattern, positions))
-
-        print('Part 1', res)
+        print('Part 1', solve_lines(lines, 1))
+        print('Part 2', solve_lines(lines, 5))
 
 
 main()
