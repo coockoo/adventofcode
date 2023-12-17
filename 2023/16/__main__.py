@@ -9,7 +9,6 @@ def vk(x: int, y: int, d: str) -> str:
     return f'{x}:{y}:{d}'
 
 
-
 def move(m: dict, p: tuple[int, int], dir: str) -> list[tuple[tuple[int, int], str]]:
     next = []
     c = m.get(k(*p))
