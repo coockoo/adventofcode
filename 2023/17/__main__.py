@@ -7,83 +7,94 @@ class cursor:
         self,
         x: int,
         y: int,
-        dir: str,
-        steps: int = 0,
+        dir: str = '',
+        val: int = float('inf')  # lul
     ):
         self.x = x
         self.y = y
         self.dir = dir
-        self.steps = steps
+        self.val = val
 
-    def get_next(self, m: dict) -> list['cursor']:
+    def get_next(self, rf: int, rt: int, m: dict) -> list['cursor']:
         next = []
-        if self.dir != 'r':
-            steps = self.steps + 1 if self.dir == 'l' or not self.dir else 0
-            next.append(cursor(self.x - 1, self.y, 'l', steps))
-        if self.dir != 'l':
-            steps = self.steps + 1 if self.dir == 'r' or not self.dir else 0
-            next.append(cursor(self.x + 1, self.y, 'r', steps))
-        if self.dir != 'd':
-            steps = self.steps + 1 if self.dir == 'u' or not self.dir else 0
-            next.append(cursor(self.x, self.y - 1, 'u', steps))
-        if self.dir != 'u':
-            steps = self.steps + 1 if self.dir == 'd' or not self.dir else 0
-            next.append(cursor(self.x, self.y + 1, 'd', steps))
-        return list(i for i in next if i.is_in(m))
+
+        def fill(get_p, d: str):
+            t = self.val
+            for i in range(1, rt):
+                p = get_p(i)
+                mv = m.get(k(*p))
+                if mv is None:
+                    break
+                t += mv
+                if i >= rf:
+                    next.append(cursor(*p, d, t))
+
+        if not self.dir or self.dir == 'u' or self.dir == 'd':
+            fill(lambda i: (self.x - i, self.y), 'l')
+            fill(lambda i: (self.x + i, self.y), 'r')
+        if not self.dir or self.dir == 'l' or self.dir == 'r':
+            fill(lambda i: (self.x, self.y - i), 'u')
+            fill(lambda i: (self.x, self.y + i), 'd')
+
+        return next
 
     def is_in(self, m: dict):
-        return bool(m.get(self.get_key()) and self.steps < 3)
-
-    def to_finish(self, s: tuple[int, int]) -> int:
-        return abs(self.x - s[0]) + abs(self.y - s[1])
+        return bool(m.get(self.get_key()))
 
     def get_key(self):
         return f'{self.x}:{self.y}'
 
     def get_v_key(self):
-        return f'{self.x}:{self.y}:{self.dir}:{self.steps}'
+        d = ''
+        if self.dir == 'l' or self.dir == 'r':
+            d = 'v'
+        if self.dir == 'u' or self.dir == 'd':
+            d = 'h'
+        return f'{self.x}:{self.y}:{d}'
 
     def __repr__(self):
-        return f'({self.x},{self.y});dir={self.dir};steps={self.steps}'
+        return f'({self.x},{self.y});dir={self.dir};val={self.val}'
+
+    def dist(self, x: int, y: int) -> int:
+        return abs(self.x - x) + abs(self.y - y)
+
+
+def sort_fn(a: cursor, b: cursor) -> int:
+    return b.val - a.val
 
 
 def k(x: int, y: int) -> str:
     return f'{x}:{y}'
 
 
-def show(f, s: tuple[int, int]):
-    t = '\n'.join(''.join(str(f.get(k(x, y))).rjust(4, ' ') for x in range(s[0])) for y in range(s[1]))
-    print(t)
-
-
-def sort_fn(v: dict, s: tuple[int, int], a: cursor, b: cursor) -> int:
-    return v.get(a.get_v_key()) - v.get(b.get_v_key())
-
-
-def part1(lines: list[str]) -> int:
+def parse(lines: list[str]) -> tuple[dict, tuple[int, int]]:
     m = {}
-    s = (len(lines[0]), len(lines))
     for y, line in enumerate(lines):
         for x, c in enumerate(line):
             m[k(x, y)] = int(c)
+    return m
+
+
+def solve(lines: list[str], rf: int, rt: int) -> int:
+    m = parse(lines)
+    wk = k(len(lines[0]) - 1, len(lines) - 1)
 
     ic = cursor(0, 0, None, 0)
     q = [ic]
     v = {ic.get_v_key(): 0}
-    wk = k(len(lines[0]) - 1, len(lines) - 1)
+
     while len(q):
         c = q.pop()
-        next = c.get_next(m)
-        cval = v.get(c.get_v_key())
+        next = c.get_next(rf, rt, m)
         if c.get_key() == wk:
-            return cval
+            return c.val
         for n in next:
-            nval = v.get(n.get_v_key())
-            mval = m.get(n.get_key())
-            if not nval or nval > mval + cval:
-                v[n.get_v_key()] = mval + cval
+            nk = n.get_v_key()
+            vval = v.get(nk)
+            if vval is None or n.val < vval:
+                v[nk] = n.val
                 q.append(n)
-        q = sorted(q, key=cmp_to_key(lambda a, b: -sort_fn(v, s, a, b)))
+        q.sort(key=cmp_to_key(lambda a, b: sort_fn(a, b)))
 
 
 def main():
@@ -92,7 +103,8 @@ def main():
         content = f.read()
         lines = list(line for line in content.split('\n') if line)
 
-        print('Part 1', part1(lines))
+        print('Part 1', solve(lines, 1, 4))
+        print('Part 2', solve(lines, 4, 11))
 
 
 main()
