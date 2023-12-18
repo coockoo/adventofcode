@@ -1,21 +1,57 @@
 from os import path
 
 
-def k(x: int, y: int) -> str:
-    return f'{x},{y}'
+def parse1(lines: list[str]) -> tuple[list[tuple[int, int]], int]:
+    points = []
+    x = 0
+    y = 0
+    p = 0
+    for line in lines:
+        dir, steps, *rest = line.split(' ')
+        steps = int(steps)
+        p += steps
+        if dir == 'L':
+            x -= steps
+        if dir == 'R':
+            x += steps
+        if dir == 'U':
+            y -= steps
+        if dir == 'D':
+            y += steps
+        points.append((x, y))
+    return points, p
 
 
-def get_neighbours(x: int, y: int, m: dict, v: dict, min_s: tuple[int, int], max_s: tuple[int, int]) -> str:
-    ns = [(x - 1, y), (x + 1, y), (x, y - 1), (x, y + 1)]
-    return [
-        i for i in ns if
-        i[0] >= min_s[0]
-        and i[1] >= min_s[1]
-        and i[0] < max_s[0]
-        and i[1] < max_s[1]
-        and not m.get(k(*i))
-        and not v.get(k(*i))
-    ]
+def parse2(lines: list[str]) -> tuple[list[tuple[int, int]], int]:
+    points = []
+    x = 0
+    y = 0
+    p = 0
+    for line in lines:
+        _, hex = line.split('#')
+        steps = int(hex[:-2], 16)
+        dir = hex[-2]
+        p += steps
+        if dir == '0':
+            x += steps
+        if dir == '1':
+            y += steps
+        if dir == '2':
+            x -= steps
+        if dir == '3':
+            y -= steps
+        points.append((x, y))
+    return points, p
+
+
+def solve(points: list[tuple[int, int]], p: int) -> int:
+    s = 0
+    lp = len(points)
+    for idx in range(lp):
+        ci = idx % lp
+        ni = (idx + 1) % lp
+        s += points[ci][0] * points[ni][1] - points[ci][1] * points[ni][0]
+    return int((abs(s) + p) / 2) + 1
 
 
 def main():
@@ -24,42 +60,8 @@ def main():
         content = f.read()
         lines = list(line for line in content.split('\n') if line)
 
-        x = 0
-        y = 0
-        max_x = x
-        max_y = y
-        min_x = x
-        min_y = y
-        m = {k(x, y): '#'}
-        for line in lines:
-            dir, steps, *rest = line.split(' ')
-            for i in range(int(steps)):
-                if dir == 'L':
-                    x -= 1
-                    min_x = min(x, min_x)
-                if dir == 'R':
-                    x += 1
-                    max_x = max(x, max_x)
-                if dir == 'U':
-                    y -= 1
-                    min_y = min(y, min_y)
-                if dir == 'D':
-                    y += 1
-                    max_y = max(y, max_y)
-                m[k(x, y)] = '#'
-        min_s = (min_x - 1, min_y - 1)
-        max_s = (max_x + 2, max_y + 2)
-
-        v = {k(*min_s): True}
-        q = [min_s]
-        while len(q):
-            c = q.pop()
-            ns = get_neighbours(*c, m, v, min_s, max_s)
-            for n in ns:
-                v[k(*n)] = True
-                q.append(n)
-        sq = (max_s[0] - min_s[0]) * (max_s[1] - min_s[1])
-        print(sq - len(v))
+        print('Part 1', solve(*parse1(lines)))
+        print('Part 2', solve(*parse2(lines)))
 
 
 main()
