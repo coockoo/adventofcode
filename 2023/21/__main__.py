@@ -22,6 +22,8 @@ def get_ns(
 
 
 def norm(ms: tuple[int, int], p: tuple[int, int]) -> tuple[int, int]:
+    if not ms:
+        return p
     return ((p[0] + ms[0]) % ms[0], (p[1] + ms[1]) % ms[1])
 
 
@@ -46,12 +48,13 @@ def solve(m: dict, s: tuple[int, int], ms: tuple[int, int], steps: int) -> int:
     v = {}
     res = 0
     for i in range(steps):
-        # print(i, len(q))
         nq = set()
+        is_count = i % 2 == (steps + 1) % 2
+
         for p in q:
             for nb in get_ns(m, *p, ms):
                 if not v.get(k(*nb)):
-                    if i % 2 == (steps + 1) % 2:
+                    if is_count:
                         res += 1
                     nq.add(nb)
                     v[k(*nb)] = True
