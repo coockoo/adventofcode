@@ -44,7 +44,6 @@ def solve(m: dict, s: tuple[int, int], ms: tuple[int, int], steps: int) -> int:
     v = {}
     res = 0
     for i in range(steps):
-        print(i, len(q))
         nq = set()
         is_count = i % 2 == (steps + 1) % 2
 
@@ -68,8 +67,8 @@ def main():
 
         m, s, ms = parse(lines)
 
-        # print("Part 1", solve(m, s, None, 64))
-        print("Part 2", solve(m, s, ms, 5000))
+        print("Part 1", solve(m, s, None, 64))
+        print("Part 2", solve(m, s, ms, 100))
 
 
 main()
