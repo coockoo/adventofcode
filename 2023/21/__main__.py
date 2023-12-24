@@ -40,24 +40,21 @@ def parse(lines: list[str]) -> tuple[dict, tuple[int, int], tuple[int, int]]:
 
 
 def solve(m: dict, s: tuple[int, int], ms: tuple[int, int], steps: int) -> int:
-    # TODO: normalized nodes should work the same as normal nodes?
-    # normalized nodes should behave the same as non-normalized nodes
-    # in the same cycle
-    # so vkey should include cycle
     q = [s]
     v = {}
     res = 0
     for i in range(steps):
+        print(i, len(q))
         nq = set()
         is_count = i % 2 == (steps + 1) % 2
 
         for p in q:
             for nb in get_ns(m, *p, ms):
                 if not v.get(k(*nb)):
-                    if is_count:
-                        res += 1
                     nq.add(nb)
                     v[k(*nb)] = True
+        if is_count:
+            res += len(nq)
         q = list(nq)
 
     return res
@@ -71,8 +68,8 @@ def main():
 
         m, s, ms = parse(lines)
 
-        print("Part 1", solve(m, s, None, 64))
-        print("Part 2", solve(m, s, ms, 500))
+        # print("Part 1", solve(m, s, None, 64))
+        print("Part 2", solve(m, s, ms, 5000))
 
 
 main()
