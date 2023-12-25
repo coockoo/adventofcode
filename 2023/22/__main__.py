@@ -77,6 +77,25 @@ def parse_line(line: str) -> "Brick":
     )
 
 
+# TODO: try recursion with cache in reversed order
+def chain(dmap: dict, id: int) -> int:
+    # print(id)
+    q = [id]
+    m = dmap.copy()
+    res = 0
+    while len(q):
+        # print(m)
+        c = q.pop()
+        for k, val in m.items():
+            if c in val:
+                m[k] = [i for i in val if i != c]
+                if not len(m[k]):
+                    res += 1
+                    q.append(k)
+    # print(res)
+    return res
+
+
 def main():
     inp = path.join(path.dirname(__file__), "input.txt")
     with open(inp, "r", encoding="utf-8") as f:
@@ -91,9 +110,11 @@ def main():
         res = set()
         required = set()
 
+        dmap = {}
         for i in range(len(bs)):
             b = bs[i]
             deps = s.drop(b)
+            dmap[b.id] = deps
             if len(deps) > 1:
                 for d in deps:
                     res.add(d)
@@ -109,6 +130,11 @@ def main():
         t = sum(1 for b in bs if b.id not in res and b.id not in required)
 
         print("Part 1", len(res) + t)
+
+        r2 = 0
+        for b in bs:
+            r2 += chain(dmap, b.id)
+        print("Part 2", r2)
 
 
 main()
