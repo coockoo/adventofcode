@@ -33,6 +33,8 @@ def main():
 
         # TODO: this implementation requies drawing graph
         # and then removing edges manually
+        # Proper way would be to use some kind of min-cut algorithm
+        # TODO: understand and implement this algorithm
         """
         G = nx.Graph()
         for e in list(edges):
