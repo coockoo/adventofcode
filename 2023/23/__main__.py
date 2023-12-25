@@ -42,16 +42,18 @@ class Route:
         """
 
         ns = [n for n in get_ns(m, *last) if n not in self.path]
+
+        if not len(ns):
+            return []
+
         if len(ns) == 1:
             self.path.append(ns[0])
             return [self]
 
         next = []
         for n in ns:
-            if n in self.path:
-                continue
             nr = Route()
-            nr.path = [*self.path.copy(), n]
+            nr.path = [*self.path, n]
             next.append(nr)
 
         return next
@@ -98,9 +100,7 @@ def main():
 
         q: list[Route] = [s]
         res = 0
-        idx = 0
         while len(q):
-            idx += 1
             c = q.pop()
             next = c.go(m)
             for n in next:
