@@ -17,11 +17,12 @@ def get_ns(m: dict, x: int, y: int) -> list[tuple[int, int]]:
 
 
 class Route:
-    def __init__(self, path: list[tuple[int, int]] = []):
-        self.path = path
+    def __init__(self, last: tuple[int, int] = None):
+        self.path = {k(*last): True} if last else None
+        self.last: tuple[int, int] = last
 
     def go(self, m: dict):
-        last = self.path[-1]
+        last = self.last
         """
         cv = m.get(k(*last))
         nv = None
@@ -41,24 +42,28 @@ class Route:
             return []
         """
 
-        ns = get_ns(m, *last)
-        ns = [n for n in ns if n not in self.path]
+        ns = [n for n in get_ns(m, *last) if not self.path.get(k(*n))]
+
+        if not len(ns):
+            return []
 
         if len(ns) == 1:
-            self.path.append(ns[0])
+            self.path[k(*ns[0])] = True
+            self.last = ns[0]
             return [self]
 
         next = []
         for n in ns:
             nr = Route()
             nr.path = self.path.copy()
-            nr.path.append(n)
+            nr.path[k(*n)] = True
+            nr.last = n
             next.append(nr)
 
         return next
 
     def is_at(self, p: tuple[int, int]):
-        return self.path[-1] == p
+        return self.last == p
 
     def __repr__(self):
         return f"route:{self.path}"
@@ -81,21 +86,21 @@ def main():
                     f = (x, y)
                 m[k(x, y)] = c
 
-        f = Route([f])
+        f = Route(f)
         while True:
             next = f.go(m)
             if len(next) > 1:
                 break
         to_finish = len(f.path) - 1
-        f = f.path[-1]
+        f = f.last
 
-        s = Route([s])
+        s = Route(s)
         while True:
             next = s.go(m)
             if len(next) > 1:
                 break
         from_start = len(s.path) - 1
-        s.path = s.path[-1:]
+        s = Route(s.last)
 
         q: list[Route] = [s]
         res = 0
