@@ -13,7 +13,7 @@ def get_ns(m: dict, x: int, y: int) -> list[tuple[int, int]]:
         (x, y + 1),
     ]
 
-    return [i for i in pn if m.get(k(*i)) and m.get(k(*i)) != "#"]
+    return [i for i in pn if m.get(k(*i)) and m.get(k(*i))]
 
 
 class Route:
@@ -43,9 +43,6 @@ class Route:
         """
 
         ns = [n for n in get_ns(m, *last) if not self.path.get(k(*n))]
-
-        if not len(ns):
-            return []
 
         if len(ns) == 1:
             self.path[k(*ns[0])] = True
@@ -84,7 +81,8 @@ def main():
                     if not s:
                         s = (x, y)
                     f = (x, y)
-                m[k(x, y)] = c
+                if c != "#":
+                    m[k(x, y)] = c
 
         f = Route(f)
         while True:
