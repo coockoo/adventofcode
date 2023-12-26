@@ -1,30 +1,14 @@
 from os import path
 
 
-def k(x: int, y: int) -> str:
-    return f"{x},{y}"
-
-
-def get_ns(m: dict, x: int, y: int) -> list[tuple[int, int]]:
-    pn = [
-        (x - 1, y),
-        (x + 1, y),
-        (x, y - 1),
-        (x, y + 1),
-    ]
-
-    return [i for i in pn if m.get(k(*i)) and m.get(k(*i))]
-
-
 class Route:
     def __init__(self, last: tuple[int, int] = None):
-        self.path = {k(*last): True} if last else None
+        self.path = {last: True} if last else None
         self.last: tuple[int, int] = last
 
     def go(self, m: dict):
-        last = self.last
         """
-        cv = m.get(k(*last))
+        cv = m.get(last)
         nv = None
         if cv == ">":
             nv = (last[0] + 1, last[1])
@@ -42,10 +26,10 @@ class Route:
             return []
         """
 
-        ns = [n for n in get_ns(m, *last) if not self.path.get(k(*n))]
+        ns = self.get_ns(m)
 
         if len(ns) == 1:
-            self.path[k(*ns[0])] = True
+            self.path[ns[0]] = True
             self.last = ns[0]
             return [self]
 
@@ -53,11 +37,21 @@ class Route:
         for n in ns:
             nr = Route()
             nr.path = self.path.copy()
-            nr.path[k(*n)] = True
+            nr.path[n] = True
             nr.last = n
             next.append(nr)
 
         return next
+
+    def get_ns(self, m: dict) -> list[tuple[int, int]]:
+        x, y = self.last
+        pn = [
+            (x - 1, y),
+            (x + 1, y),
+            (x, y - 1),
+            (x, y + 1),
+        ]
+        return [i for i in pn if m.get(i) and not self.path.get(i)]
 
     def is_at(self, p: tuple[int, int]):
         return self.last == p
@@ -82,7 +76,7 @@ def main():
                         s = (x, y)
                     f = (x, y)
                 if c != "#":
-                    m[k(x, y)] = c
+                    m[(x, y)] = c
 
         f = Route(f)
         while True:
