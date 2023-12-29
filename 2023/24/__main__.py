@@ -2,8 +2,8 @@ from os import path
 
 
 def calc_a_b(x, y, z, dx, dy, dz) -> tuple[float, float]:
-    a = (y - (y + dy)) / (x - (x + dx))
-    b = y + dy - a * (x + dx)
+    a = dy / dx
+    b = y - a * x
     return a, b
 
 
@@ -26,10 +26,10 @@ def parse(lines: list[str]) -> list[Data]:
     return ps
 
 
-def part1(ps: list[Data], part: str) -> int:
+def part1(ps: list[Data], mode: str) -> int:
     res = 0
-    fr = 200000000000000 if part != "demo" else 7
-    to = 400000000000000 if part != "demo" else 27
+    fr = 200000000000000 if mode != "demo" else 7
+    to = 400000000000000 if mode != "demo" else 27
     for idx, p1 in enumerate(ps):
         x1, y1, z1, dx1, dy1, dz1 = p1
         a1, b1 = calc_a_b(*p1)
@@ -57,15 +57,15 @@ def part1(ps: list[Data], part: str) -> int:
 
 
 def main():
-    part = "input"
-    inp = path.join(path.dirname(__file__), f"{part}.txt")
+    mode = "input"
+    inp = path.join(path.dirname(__file__), f"{mode}.txt")
     with open(inp, "r", encoding="utf-8") as f:
         content = f.read()
         lines = list(line for line in content.split("\n") if line)
 
         ps = parse(lines)
 
-        print("Part1", part1(ps, part))
+        print("Part1", part1(ps, mode))
 
 
 main()
