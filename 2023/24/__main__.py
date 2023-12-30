@@ -67,5 +67,20 @@ def main():
 
         print("Part1", part1(ps, mode))
 
+        speed_range = 500
+        for dx in range(-speed_range, speed_range + 1):
+            for dy in range(-speed_range, speed_range + 1):
+                if dx == 0:
+                    continue
+
+                a = dy / dx
+
+                for idx, p1 in enumerate(ps):
+                    x1, y1, z1, dx1, dy1, dz1 = p1
+                    a1, b1 = calc_a_b(*p1)
+                    for p2 in ps[idx + 1:]:
+                        x2, y2, z2, dx2, dy2, dz2 = p2
+                        a2, b2 = calc_a_b(*p2)
+
 
 main()
