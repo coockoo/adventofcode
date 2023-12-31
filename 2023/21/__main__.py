@@ -64,6 +64,9 @@ def part2(m, s, ms) -> int:
     # I feel bad for doing this
     # Task can be either super easy or super hard depending on wether
     # you know theory or not
+
+    # Probably it's this one
+    # f(x) = f(x0) + f'(x0)(x - x0)
     x0 = 65
     y0 = solve(m, s, ms, x0)
     x1 = 131 + 65
