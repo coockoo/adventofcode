@@ -30,8 +30,7 @@ pub fn main() !void {
     std.mem.sort(i32, rs.items, {}, std.sort.asc(i32));
 
     var res: u32 = 0;
-    for (ls.items, 0..) |l, idx| {
-        const r = rs.items[idx];
+    for (ls.items, rs.items) |l, r| {
         res += @abs(l - r);
     }
     std.debug.print("Part 1: {any}\n", .{res});
