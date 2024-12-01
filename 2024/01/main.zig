@@ -34,7 +34,17 @@ pub fn main() !void {
         const r = rs.items[idx];
         res += @abs(l - r);
     }
-    std.debug.print("res: {any}\n", .{res});
-    // std.debug.print("ls: {any}\n", .{ls});
-    // std.debug.print("rs: {any}\n", .{rs});
+    std.debug.print("Part 1: {any}\n", .{res});
+
+    res = 0;
+    for (ls.items) |l| {
+        var count: u32 = 0;
+        for (rs.items) |r| {
+            if (l == r) {
+                count += 1;
+            }
+        }
+        res += @abs(l) * count;
+    }
+    std.debug.print("Part 2: {any}\n", .{res});
 }
