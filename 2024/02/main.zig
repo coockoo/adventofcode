@@ -18,7 +18,8 @@ pub fn main() !void {
             continue;
         }
 
-        for (0..list.items.len) |i| {
+        const suspects: [3]usize = .{ 0, failed_index.? - 1, failed_index.? };
+        for (suspects) |i| {
             var try_list = try list.clone();
             _ = try_list.orderedRemove(i);
             if (getFailedIndex(try_list.items) == null) {
