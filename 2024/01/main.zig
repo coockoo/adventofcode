@@ -4,12 +4,14 @@ pub fn main() !void {
     const file = try std.fs.cwd().openFile("./2024/01/input.txt", .{});
     defer file.close();
 
+    const allocator = std.heap.page_allocator;
+    var ls = std.ArrayList(i32).init(allocator);
+    defer ls.deinit();
+    var rs = std.ArrayList(i32).init(allocator);
+    defer rs.deinit();
+
     var bufReader = std.io.bufferedReader(file.reader());
     var reader = bufReader.reader();
-
-    var ls = std.ArrayList(i32).init(std.heap.page_allocator);
-    var rs = std.ArrayList(i32).init(std.heap.page_allocator);
-
     var buf: [128]u8 = undefined;
     while (try reader.readUntilDelimiterOrEof(&buf, '\n')) |line| {
         const ml = std.mem.indexOf(u8, line, " ");
