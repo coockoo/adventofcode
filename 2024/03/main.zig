@@ -13,11 +13,9 @@ pub fn main() !void {
         for (0..line.len) |idx| {
             const slice = line[idx..];
             if (std.mem.startsWith(u8, slice, "mul(")) {
-                const end_maybe = std.mem.indexOfScalarPos(u8, line, idx + 1, ')');
-                if (end_maybe) |end| {
-                    const mul_slice = line[idx + 4 .. end];
-                    var it = std.mem.splitScalar(u8, mul_slice, ',');
+                if (std.mem.indexOfScalarPos(u8, slice, 4, ')')) |end| {
                     var local_res: u32 = 1;
+                    var it = std.mem.splitScalar(u8, slice[4..end], ',');
                     while (it.next()) |b| {
                         local_res *= std.fmt.parseInt(u32, b, 10) catch 0;
                     }
