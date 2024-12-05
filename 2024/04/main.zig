@@ -82,7 +82,7 @@ fn findX(map: []const u8, idx: usize, row_len: usize) usize {
     return 0;
 }
 
-fn makeSlice(map: []const u8, idx: usize, row_len: usize, dx: isize, dy: usize) [4]u8 {
+fn makeSlice(map: []const u8, idx: usize, row_len: usize, dx: comptime_int, dy: comptime_int) [4]u8 {
     var res: [4]u8 = undefined;
     @memset(&res, 0);
     inline for (0..4) |ui| {
