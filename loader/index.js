@@ -7,7 +7,8 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const handler = async () => {
   const now = new Date();
   const year = process.argv[2] || `${now.getFullYear()}`;
-  const day = process.argv[3] || `${now.getDate()}`;
+  let day = process.argv[3] || `${now.getDate()}`;
+  day = day.replace(/^0+/, '');
   console.log(`getting input for ${year} ${day}`);
 
   let cookie = await fs.readFile(path.resolve(__dirname, 'cookie.txt'), 'utf8');
