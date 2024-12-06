@@ -30,7 +30,6 @@ const Field = struct {
 
         const prev_dir = self.visited.get(self.pos);
         if (prev_dir == self.dir) {
-            // std.debug.print("found loop! {d} {any}", .{ self.pos, self.dir });
             return .loop;
         }
 
@@ -65,9 +64,6 @@ const Field = struct {
             self.pos = next_pos;
         }
 
-        // std.debug.print("next post {d}\n", .{self.pos});
-        // std.debug.print("next dir {any}\n", .{self.dir});
-
         return .move;
     }
 
@@ -88,7 +84,7 @@ const Field = struct {
 };
 
 pub fn main() !void {
-    const file = try std.fs.cwd().openFile("./2024/06/demo.txt", .{});
+    const file = try std.fs.cwd().openFile("./2024/06/input.txt", .{});
     defer file.close();
     var bufReader = std.io.bufferedReader(file.reader());
     var reader = bufReader.reader();
@@ -117,9 +113,8 @@ pub fn main() !void {
     while (try field.move() == .move) {}
 
     for (0..map.items.len) |idx| {
-        std.debug.print("idx: {d}/{d}\n", .{ idx + 1, map.items.len });
         var next_map = try map.clone();
-        if (next_map.items[idx] == '#') {
+        if (next_map.items[idx] == '#' or idx == pos) {
             continue;
         }
         next_map.items[idx] = '#';
