@@ -112,7 +112,9 @@ pub fn main() !void {
     defer field.deinit();
     while (try field.move() == .move) {}
 
-    for (0..map.items.len) |idx| {
+    var it = field.visited.keyIterator();
+    while (it.next()) |i| {
+        const idx = i.*;
         var next_map = try map.clone();
         if (next_map.items[idx] == '#' or idx == pos) {
             continue;
@@ -129,8 +131,6 @@ pub fn main() !void {
             res_two += 1;
         }
     }
-
-    res_two += 0;
 
     std.debug.print("Part 1: {d}\n", .{field.resOne()});
     std.debug.print("Part 2: {d}\n", .{res_two});
