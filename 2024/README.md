@@ -48,3 +48,10 @@ user_pointer.*.id = 846;
 const user = User{ .id = 123 };
 user.id = 5; // cannot assign to constant
 ```
+
+## memcpy
+
+```zig
+// copy the items we previously added to our new space
+@memcpy(larger[0..len], self.items);
+```
