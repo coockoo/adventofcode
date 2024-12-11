@@ -2,6 +2,7 @@ const std = @import("std");
 const Allocator = std.mem.Allocator;
 const ArrayList = std.ArrayList;
 const print = std.debug.print;
+const Map = std.AutoHashMap(usize, usize);
 
 pub fn main() !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
@@ -11,7 +12,7 @@ pub fn main() !void {
     defer file.close();
     var reader = file.reader();
 
-    var map = std.AutoHashMap(usize, usize).init(allocator);
+    var map = Map.init(allocator);
 
     const line = try reader.readUntilDelimiterOrEofAlloc(allocator, '\n', 64);
     var it = std.mem.split(u8, line.?, " ");
@@ -20,9 +21,9 @@ pub fn main() !void {
         try map.put(num, (map.get(num) orelse 0) + 1);
     }
 
-    // TODO: make it work for 25 and 75 too
-    for (0..75) |_| {
-        var new_map = std.AutoHashMap(usize, usize).init(allocator);
+    var res_one: usize = 0;
+    for (0..75) |i| {
+        var new_map = Map.init(allocator);
 
         var map_id = map.iterator();
         while (map_id.next()) |entry| {
@@ -48,17 +49,21 @@ pub fn main() !void {
 
         map.deinit();
         map = new_map;
+        if (i == 24) {
+            res_one = calcRes(&map);
+        }
     }
+    const res_two = calcRes(&map);
 
-    // var res_one: usize = 0;
-    var res_two: usize = 0;
-
-    var res_it = map.valueIterator();
-    var i: usize = 0;
-    while (res_it.next()) |val| {
-        res_two += val.*;
-        i += 1;
-    }
-    // print("Part 1: {d}\n", .{res_one});
+    print("Part 1: {d}\n", .{res_one});
     print("Part 2: {d}\n", .{res_two});
+}
+
+fn calcRes(map: *Map) usize {
+    var res: usize = 0;
+    var res_it = map.valueIterator();
+    while (res_it.next()) |val| {
+        res += val.*;
+    }
+    return res;
 }
