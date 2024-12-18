@@ -8,6 +8,13 @@ const Robot = struct {
     dy: isize,
 };
 
+const w: isize = 101;
+const h: isize = 103;
+//const w: isize = 11;
+//const h: isize = 7;
+const w2: isize = @divFloor(w, 2);
+const h2: isize = @divFloor(h, 2);
+
 pub fn main() !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
     const allocator = gpa.allocator();
@@ -15,9 +22,6 @@ pub fn main() !void {
     const file = try std.fs.cwd().openFile("./2024/14/input.txt", .{});
     defer file.close();
     var reader = file.reader();
-
-    var res_two: isize = 0;
-    res_two += 0;
 
     var robots = std.ArrayList(Robot).init(allocator);
     defer robots.deinit();
@@ -37,31 +41,66 @@ pub fn main() !void {
     }
 
     print("Part 1: {d}\n", .{solveOne(robots.items)});
+    const res_two = solveTwo(robots.items);
     print("Part 2: {d}\n", .{res_two});
+    printRobots(robots.items, @as(isize, @intCast(res_two)));
+}
+
+fn allUnique(robots: []Robot, step: isize) bool {
+    for (robots, 0..) |robota, ai| {
+        for (robots, 0..) |robotb, bi| {
+            if (ai == bi) {
+                continue;
+            }
+            const axy = getxy(robota, step);
+            const ax = axy.x;
+            const ay = axy.y;
+
+            const bxy = getxy(robotb, step);
+            const bx = bxy.x;
+            const by = bxy.y;
+
+            if (ax == bx and ay == by) {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+fn printRobots(robots: []Robot, step: isize) void {
+    for (0..h) |y| {
+        for (0..w) |x| {
+            var found = false;
+            for (robots) |robot| {
+                const xy = getxy(robot, step);
+                const rx = xy.x;
+                const ry = xy.y;
+                if (rx == x and ry == y) {
+                    found = true;
+                    print("#", .{});
+                    break;
+                }
+            }
+            if (!found) {
+                print(".", .{});
+            }
+        }
+        print("\n", .{});
+    }
 }
 
 fn solveOne(robots: []Robot) usize {
-    const w: isize = 101;
-    const h: isize = 103;
-    // const w: isize = 11;
-    //const h: isize = 7;
-    const w2: isize = @divFloor(w, 2);
-    const h2: isize = @divFloor(h, 2);
-    const t: isize = 100;
-
     var a: usize = 0;
     var b: usize = 0;
     var c: usize = 0;
     var d: usize = 0;
 
     for (robots) |robot| {
-        const x0 = robot.x0;
-        const y0 = robot.y0;
-        const dx = robot.dx;
-        const dy = robot.dy;
+        const xy = getxy(robot, 100);
+        const x = xy.x;
+        const y = xy.y;
 
-        const x = @mod(x0 + dx * t, w);
-        const y = @mod(y0 + dy * t, h);
         if (x < w2 and y < h2) {
             a += 1;
         }
@@ -77,4 +116,24 @@ fn solveOne(robots: []Robot) usize {
     }
 
     return a * b * c * d;
+}
+
+fn solveTwo(robots: []Robot) usize {
+    for (0..10000) |s| {
+        if (allUnique(robots, @as(isize, @intCast(s)))) {
+            return s;
+        }
+    }
+    return 0;
+}
+
+const XY = struct {
+    x: isize,
+    y: isize,
+};
+
+fn getxy(robot: Robot, t: isize) XY {
+    const x = @mod(robot.x0 + robot.dx * t, w);
+    const y = @mod(robot.y0 + robot.dy * t, h);
+    return XY{ .x = x, .y = y };
 }
