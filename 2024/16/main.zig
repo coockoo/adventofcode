@@ -5,7 +5,7 @@ const Allocator = std.mem.Allocator;
 
 const Dir = enum { u, r, d, l };
 
-const Pos = struct { score: usize, idx: usize, dir: Dir };
+const Pos = struct { score: usize, idx: usize, dir: Dir, path: []const usize };
 
 fn compare(ctx: void, a: Pos, b: Pos) std.math.Order {
     _ = ctx;
@@ -23,8 +23,8 @@ pub fn main() !void {
     var map = std.ArrayList(u8).init(allocator);
     defer map.deinit();
 
-    var stack = std.PriorityQueue(Pos, void, compare).init(allocator, {});
-    defer stack.deinit();
+    var q = std.PriorityQueue(Pos, void, compare).init(allocator, {});
+    defer q.deinit();
 
     var visited = std.AutoHashMap(usize, usize).init(allocator);
     defer visited.deinit();
@@ -39,7 +39,7 @@ pub fn main() !void {
         w = @max(line.len, w);
         const y = h * w;
         if (std.mem.indexOfScalar(u8, line, 'S')) |x| {
-            try stack.add(.{ .idx = y + x, .dir = .r, .score = 0 });
+            try q.add(.{ .idx = y + x, .dir = .r, .score = 0, .path = undefined });
         }
         if (std.mem.indexOfScalar(u8, line, 'E')) |x| {
             end = y + x;
@@ -47,66 +47,49 @@ pub fn main() !void {
         h += 1;
     }
 
+    var paths = std.AutoHashMap(usize, bool).init(allocator);
+    defer paths.deinit();
+
     var res_one: usize = std.math.maxInt(usize);
-    while (stack.items.len > 0) {
-        const pos = stack.remove();
+    while (q.items.len > 0) {
+        const pos = q.remove();
+        // print("score: {d}; len: {d}\n", .{ pos.score, q.items.len });
         if (visited.get(pos.idx)) |visited_score| {
             if (visited_score < pos.score) {
                 continue;
             }
         }
         if (pos.idx == end) {
+            if (pos.score > res_one) {
+                for (pos.path) |i| {
+                    try paths.put(i, true);
+                }
+                break;
+            }
             res_one = pos.score;
-            break;
         }
         try visited.put(pos.idx, pos.score);
         const ms = moves(map.items, w, h, pos.idx);
 
-        if (ms[0]) |mu| {
-            const cost: usize = switch (pos.dir) {
-                .u => 1,
-                .r => 1001,
-                .d => 2001,
-                .l => 1001,
-            };
-            if (pos.dir != .d) try stack.add(.{ .score = pos.score + cost, .idx = mu, .dir = .u });
-        }
+        const path = try allocator.alloc(usize, pos.path.len + 1);
+        @memcpy(path[0..pos.path.len], pos.path);
+        path[pos.path.len] = pos.idx;
+        // TODO: investigate how to free without segfault. How to debug segfault
+        // defer allocator.free(pos.path);
 
-        if (ms[1]) |mr| {
-            const cost: usize = switch (pos.dir) {
-                .u => 1001,
-                .r => 1,
-                .d => 1001,
-                .l => 2001,
-            };
-            if (pos.dir != .l) try stack.add(.{ .score = pos.score + cost, .idx = mr, .dir = .r });
-        }
-
-        if (ms[2]) |md| {
-            const cost: usize = switch (pos.dir) {
-                .u => 2001,
-                .r => 1001,
-                .d => 1,
-                .l => 1001,
-            };
-            if (pos.dir != .u) try stack.add(.{ .score = pos.score + cost, .idx = md, .dir = .d });
-        }
-
-        if (ms[3]) |ml| {
-            const cost: usize = switch (pos.dir) {
-                .u => 1001,
-                .r => 2001,
-                .d => 1001,
-                .l => 1,
-            };
-            if (pos.dir != .r) try stack.add(.{ .score = pos.score + cost, .idx = ml, .dir = .l });
+        const dirs: [4]Dir = .{ .u, .r, .d, .l };
+        for (ms, dirs) |next_idx_maybe, dir| {
+            if (next_idx_maybe) |next_idx| {
+                const cost: usize = if (pos.dir == dir) 1 else 1001;
+                if (std.mem.indexOfScalar(usize, pos.path, next_idx) == null) {
+                    try q.add(.{ .score = pos.score + cost, .idx = next_idx, .dir = dir, .path = path });
+                }
+            }
         }
     }
 
     print("Part 1: {d}\n", .{res_one});
-    var res_two: usize = 0;
-    res_two += 0;
-    print("Part 2: {d}\n", .{res_two});
+    print("Part 2: {d}\n", .{paths.count()});
 }
 
 fn moves(map: []u8, w: usize, h: usize, idx: usize) [4]?usize {
@@ -132,7 +115,3 @@ fn ns(w: usize, h: usize, idx: usize) [4]?usize {
         if (x > 0) y * w + (x - 1) else null,
     };
 }
-
-// fn isValid(map: []u8, idx: Pos) bool {
-// return pos.y >= 0 and pos.y < grid.len and pos.x >= 0 and pos.x < grid.*[@abs(pos.y)].len;
-// }
