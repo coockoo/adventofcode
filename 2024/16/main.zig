@@ -1,11 +1,11 @@
 const std = @import("std");
-const Visited = std.AutoHashMap(usize, bool);
 const print = std.debug.print;
 const Allocator = std.mem.Allocator;
 
 const Dir = enum { u, r, d, l };
 
 const Pos = struct { score: usize, idx: usize, dir: Dir, path: []const usize };
+const Visited = struct { idx: usize, dir: Dir };
 
 fn compare(ctx: void, a: Pos, b: Pos) std.math.Order {
     _ = ctx;
@@ -26,7 +26,7 @@ pub fn main() !void {
     var q = std.PriorityQueue(Pos, void, compare).init(allocator, {});
     defer q.deinit();
 
-    var visited = std.AutoHashMap(usize, usize).init(allocator);
+    var visited = std.AutoHashMap(Visited, usize).init(allocator);
     defer visited.deinit();
 
     var end: usize = undefined;
@@ -49,26 +49,26 @@ pub fn main() !void {
 
     var paths = std.AutoHashMap(usize, bool).init(allocator);
     defer paths.deinit();
+    try paths.put(end, true);
 
     var res_one: usize = std.math.maxInt(usize);
     while (q.items.len > 0) {
         const pos = q.remove();
-        // print("score: {d}; len: {d}\n", .{ pos.score, q.items.len });
-        if (visited.get(pos.idx)) |visited_score| {
-            if (visited_score < pos.score) {
+        if (visited.get(.{ .idx = pos.idx, .dir = pos.dir })) |visited_score| {
+            if (pos.score > visited_score) {
                 continue;
             }
         }
         if (pos.idx == end) {
             if (pos.score > res_one) {
-                for (pos.path) |i| {
-                    try paths.put(i, true);
-                }
                 break;
             }
             res_one = pos.score;
+            for (pos.path) |i| {
+                try paths.put(i, true);
+            }
         }
-        try visited.put(pos.idx, pos.score);
+        try visited.put(.{ .idx = pos.idx, .dir = pos.dir }, pos.score);
         const ms = moves(map.items, w, h, pos.idx);
 
         const path = try allocator.alloc(usize, pos.path.len + 1);
