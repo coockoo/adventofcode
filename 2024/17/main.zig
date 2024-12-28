@@ -7,7 +7,7 @@ pub fn main() !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
     const allocator = gpa.allocator();
 
-    const file = try std.fs.cwd().openFile("./2024/17/demo.txt", .{});
+    const file = try std.fs.cwd().openFile("./2024/17/input.txt", .{});
     defer file.close();
     var reader = file.reader();
 
@@ -38,7 +38,7 @@ pub fn main() !void {
     var out = std.ArrayList(usize).init(allocator);
     defer out.deinit();
 
-    print("a: {d}; b: {d}; c: {d}\n", .{ a, b, c });
+    print("pl: {d}, a: {d}; b: {d}; c: {d}\n", .{ prog.items.len, a, b, c });
 
     while (i < prog.items.len) : (i +%= 2) {
         const opcode = prog.items[i];
@@ -53,7 +53,7 @@ pub fn main() !void {
         } else operand;
         switch (opcode) {
             0 => a = dv(a, value),
-            1 => b = b ^ value,
+            1 => b ^= value,
             2 => b = @mod(value, 8),
             3 => {
                 if (a != 0) {
@@ -62,7 +62,7 @@ pub fn main() !void {
                     i -%= 2;
                 }
             },
-            4 => b = b ^ c,
+            4 => b ^= c,
             5 => try out.append(@mod(value, 8)),
             6 => b = dv(a, value),
             7 => c = dv(a, value),
@@ -72,7 +72,7 @@ pub fn main() !void {
         print("a: {d}; b: {d}; c: {d}\n", .{ a, b, c });
     }
 
-    print("Part 1: {s}\n", .{try join(allocator, out.items)});
+    print("Part 1: {s} {d}\n", .{ try join(allocator, out.items), out.items.len });
     print("Part 2: {d}\n", .{0});
 }
 
