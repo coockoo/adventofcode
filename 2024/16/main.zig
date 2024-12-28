@@ -24,7 +24,12 @@ pub fn main() !void {
     defer map.deinit();
 
     var q = std.PriorityQueue(Pos, void, compare).init(allocator, {});
-    defer q.deinit();
+    defer {
+        for (q.items) |item| {
+            allocator.free(item.path);
+        }
+        q.deinit();
+    }
 
     var visited = std.AutoHashMap(Visited, usize).init(allocator);
     defer visited.deinit();
@@ -54,6 +59,7 @@ pub fn main() !void {
     var res_one: usize = std.math.maxInt(usize);
     while (q.items.len > 0) {
         const pos = q.remove();
+        defer allocator.free(pos.path);
         if (visited.get(.{ .idx = pos.idx, .dir = pos.dir })) |visited_score| {
             if (pos.score > visited_score) {
                 continue;
@@ -71,17 +77,14 @@ pub fn main() !void {
         try visited.put(.{ .idx = pos.idx, .dir = pos.dir }, pos.score);
         const ms = moves(map.items, w, h, pos.idx);
 
-        const path = try allocator.alloc(usize, pos.path.len + 1);
-        @memcpy(path[0..pos.path.len], pos.path);
-        path[pos.path.len] = pos.idx;
-        // TODO: investigate how to free without segfault. How to debug segfault
-        // defer allocator.free(pos.path);
-
         const dirs: [4]Dir = .{ .u, .r, .d, .l };
         for (ms, dirs) |next_idx_maybe, dir| {
             if (next_idx_maybe) |next_idx| {
-                const cost: usize = if (pos.dir == dir) 1 else 1001;
                 if (std.mem.indexOfScalar(usize, pos.path, next_idx) == null) {
+                    const path = try allocator.alloc(usize, pos.path.len + 1);
+                    @memcpy(path[0..pos.path.len], pos.path);
+                    path[pos.path.len] = pos.idx;
+                    const cost: usize = if (pos.dir == dir) 1 else 1001;
                     try q.add(.{ .score = pos.score + cost, .idx = next_idx, .dir = dir, .path = path });
                 }
             }
